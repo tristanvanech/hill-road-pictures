@@ -64,7 +64,7 @@ const VideoModal = ({ isOpen, onClose, videoId }: { isOpen: boolean; onClose: ()
 
 const Header = () => (
   <header className="fixed top-0 left-0 w-full z-50 py-2 md:py-3 bg-brand-blue shadow-xl border-b border-brand-gold/20">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-2">
+    <div className="max-w-[1536px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 flex flex-col gap-2">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4 md:gap-8">
           <a href="/" className="block">
@@ -112,7 +112,7 @@ const Header = () => (
 const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
   return (
     <div className="relative min-h-screen w-full flex flex-col justify-center pt-16 md:pt-28 pb-12 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
+      <div className="max-w-[1536px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 w-full relative z-10">
         <div className="grid lg:grid-cols-12 gap-16 lg:gap-8 xl:gap-16 items-center mb-16">
           
           {/* Left: Text Content */}
@@ -129,7 +129,7 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
               INVEST IN <span className="text-brand-blue">"SO, I'M THE CRAZY ONE?"</span>
             </h1>
             <p className="text-base md:text-xl text-gray-700 leading-relaxed mb-10 max-w-xl">
-              Get your front-row seat to the new era of creator-led cinema. Join us in producing the funniest R-rated comedy of the decade — with an ensemble cast of digital-native creators and mainstream actors commanding 200M+ followers, locking in a passionate fanbase before the camera rolls. Early investors get downside protection via first lien on GA tax credits, plus uncapped upside through our pioneering ownership model.
+              Get your front-row seat to the new era of creator-led cinema. Join us in producing the funniest R-rated comedy of the decade — with an ensemble cast of digital-native creators and mainstream actors commanding 200M+ followers, locking in a passionate fanbase before the camera rolls. Early investors are eligible for downside protection via first lien on GA tax credits, plus uncapped upside through our pioneering ownership model.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-12">
@@ -257,7 +257,7 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
 
 const TheHook = () => (
   <section className="py-16 md:py-24 bg-brand-blue text-white relative z-20">
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
       <div className="text-center max-w-4xl mx-auto">
         <h2 className="text-3xl md:text-6xl font-display text-brand-gold mb-6">BRINGING BACK THE R-RATED COMEDY</h2>
         <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-12">
@@ -287,7 +287,7 @@ const TheHook = () => (
 
 const MarketLandscape = () => (
   <section id="landscape" className="py-16 md:py-24 bg-white relative z-20 border-b border-border">
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
       <div className="text-center mb-12 md:mb-16">
         <h2 className="text-4xl md:text-7xl font-display text-brand-red mb-4 uppercase">THE MARKET LANDSCAPE</h2>
         <p className="text-base md:text-xl text-text-muted font-medium uppercase tracking-widest">The Golden Age is Ripe for a Comeback</p>
@@ -347,7 +347,7 @@ const MarketLandscape = () => (
 
 const TheStory = ({ onWatchTrailer, onWatchFrank }: { onWatchTrailer: () => void; onWatchFrank: () => void }) => (
   <section id="story" className="py-24 bg-brand-blue text-white relative z-20 border-b border-brand-gold/20">
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
       <h2 className="text-6xl md:text-8xl font-display text-brand-gold mb-8 text-center">THE STORY</h2>
       <p className="text-center text-xl md:text-2xl font-display text-white mb-16 uppercase tracking-widest">A <span className="italic">crazy</span> funny script that will <span className="text-brand-red">offend everyone</span></p>
       
@@ -396,7 +396,7 @@ const TheStory = ({ onWatchTrailer, onWatchFrank }: { onWatchTrailer: () => void
 
 const TheOffering = () => (
   <section id="offering" className="tailored-section">
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 font-sans">
       <div className="text-center mb-16">
         <h2 className="text-5xl md:text-7xl font-display text-brand-blue mb-4">THE OFFERING</h2>
         <p className="text-xl text-text-muted font-medium uppercase tracking-widest">Clarifying Agreement for Sharing the Haul (CASH)</p>
@@ -415,7 +415,7 @@ const TheOffering = () => (
               </div>
               <div>
                 <h4 className="font-black text-brand-blue uppercase tracking-widest text-sm mb-1">Downside Protection</h4>
-                <p className="text-sm text-text-muted">Investors hold a first lien on expected Georgia Tax Credits (up to 30% of the production budget), providing a clear path to capital recovery.</p>
+                <p className="text-sm text-text-muted">Early investors hold a first lien on expected Georgia Tax Credits (up to 30% of the production budget, based on availability).</p>
               </div>
             </div>
             <div className="bg-white p-6 rounded-xl border border-brand-blue/10 shadow-sm flex gap-4">
@@ -424,7 +424,7 @@ const TheOffering = () => (
               </div>
               <div>
                 <h4 className="font-black text-brand-blue uppercase tracking-widest text-sm mb-1">Preferred Returns</h4>
-                <p className="text-sm text-text-muted">Early investors receive a 20% preferred return and a 20% discount upon conversion into Membership Units.</p>
+                <p className="text-sm text-text-muted">Early investors receive a 20% preferred return and a 10% discount upon conversion into Membership Units.</p>
               </div>
             </div>
           </div>
@@ -463,61 +463,232 @@ const TheOffering = () => (
       </div>
 
       <div className="mt-24">
-        <h3 className="text-4xl font-display text-brand-blue mb-12 text-center">Investment Tiers</h3>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-white border border-brand-blue/20 rounded-xl shadow-md flex flex-col overflow-hidden">
-            <div className="bg-brand-blue text-white text-center py-8 px-6">
-              <h4 className="text-3xl font-display text-brand-gold tracking-widest uppercase">Spotlight</h4>
-              <div className="text-gray-300 text-lg font-bold mt-2">$10,000+</div>
+        <div className="max-w-4xl mx-auto text-center mb-12">
+          <h3 className="text-4xl md:text-5xl font-display text-brand-blue mb-3">Investment Tiers</h3>
+          <p className="text-sm md:text-base text-text-muted font-bold uppercase tracking-wider">
+            $5,000 Membership Units with 10% Reg CF discount and tiered investor benefits. Member Unit economics apply to every tier.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* OPENING SCENE */}
+          <div className="bg-brand-blue rounded-2xl border border-brand-gold/15 overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-brand-gold/45 shadow-lg group relative">
+            <div 
+              className="bg-cover bg-center h-48 relative flex items-end p-5 bg-[#0B1F3B]"
+              style={{ backgroundImage: "url('https://coopsimms.com/notes/samplecfcards/images/opening-scene.jpg')" }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-blue via-brand-blue/35 to-transparent z-0"></div>
+              <div className="relative z-10 w-full mt-auto">
+                <span className="block w-8 h-0.5 rounded bg-[#e7d8b4] mb-2"></span>
+                <div className="font-display text-2xl lg:text-3xl uppercase tracking-wider text-white">Opening Scene</div>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="font-display text-sm md:text-base text-white/80">$5,000</span>
+                  <span className="text-[10px] font-black tracking-widest text-[#e7d8b4]/60 uppercase">1 Unit</span>
+                </div>
+              </div>
             </div>
-            <div className="p-8 flex-grow flex flex-col">
-              <p className="text-sm font-bold uppercase tracking-widest text-brand-red mb-6 text-center">Core capital protection and early participation</p>
-              <ul className="space-y-3 text-sm text-text-muted flex-grow">
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Repayment of invested capital</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> 20% preferred return</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> 20% discounted Membership Units</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Priority access to designated incentive proceeds</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Investor Updates & Private Screening</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Upside participation rights</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Pro rata rights</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Priority allocation rights, if limited</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> First-priority allocation rights, if limited</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Most-favored economic terms protection</li>
-              </ul>
+            <div className="p-5 flex-grow flex flex-col justify-between text-white font-sans">
+              <div>
+                <p className="font-display uppercase tracking-widest text-xs tracking-[0.12em] text-[#e7d8b4] font-bold mb-4">Entry-Level Participation</p>
+                
+                <ul className="space-y-4 text-sm text-white">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-4 h-4 text-[#e7d8b4] shrink-0 mt-0.5" />
+                    <span className="leading-snug text-white/90">
+                      <strong className="font-bold">Investor updates</strong>: stay informed on production milestones, financial reporting, and key announcements throughout the film's journey
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <div className="mt-4">
+                  <a 
+                    href="https://form.jotform.com/260926137459162" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 text-center text-xs font-display uppercase tracking-widest bg-[#e7d8b4] hover:bg-[#ebdcb4] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-bold rounded-xl block shadow-md"
+                  >
+                    Greenlight the Scene
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white border border-brand-red/20 rounded-xl shadow-xl transform md:-translate-y-4 flex flex-col relative overflow-hidden">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-brand-gold text-black px-4 py-1 rounded-b-lg text-xs font-bold uppercase tracking-widest shadow-md z-10">Most Popular</div>
-            <div className="bg-brand-red text-white text-center py-10 px-6">
-              <h4 className="text-3xl font-display text-brand-gold tracking-widest uppercase">Marquee</h4>
-              <div className="text-gray-200 text-lg font-bold mt-2">$30,000+</div>
+          {/* SPOTLIGHT */}
+          <div className="bg-brand-blue rounded-2xl border border-brand-gold/15 overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-brand-gold/45 shadow-lg group relative">
+            <div 
+              className="bg-cover bg-center h-48 relative flex items-end p-5 bg-[#0B1F3B]"
+              style={{ backgroundImage: "url('https://coopsimms.com/notes/samplecfcards/images/spotlight.jpg')" }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-blue via-brand-blue/35 to-transparent z-0"></div>
+              <div className="relative z-10 w-full mt-auto">
+                <span className="block w-8 h-0.5 rounded bg-[#6f9fd8] mb-2"></span>
+                <div className="font-display text-2xl lg:text-3xl uppercase tracking-wider text-white">Spotlight</div>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="font-display text-sm md:text-base text-white/80">$10,000+</span>
+                  <span className="text-[10px] font-black tracking-widest text-[#6f9fd8]/60 uppercase">2+ Units</span>
+                </div>
+              </div>
             </div>
-            <div className="p-8 flex-grow flex flex-col">
-              <p className="text-sm font-bold uppercase tracking-widest text-brand-red mb-6 text-center">Premium access</p>
-              <div className="text-xs font-bold text-text-muted mb-4 uppercase bg-gray-50 p-2 rounded text-center">Everything in Spotlight, plus:</div>
-              <ul className="space-y-4 text-sm text-text-muted flex-grow">
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Memorabilia Bundle* (Signed poster, commemorative item, signed script)</li>
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Marquee Bundle* (Premiere invitation, ticket access, special thanks)</li>
-              </ul>
+            <div className="p-5 flex-grow flex flex-col justify-between text-white font-sans">
+              <div>
+                <p className="font-display uppercase tracking-widest text-xs tracking-[0.12em] text-[#6f9fd8] font-bold mb-4">Core Participation &amp; Screening Access</p>
+                
+                <div className="flex items-center gap-2.5 font-bold text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-xs tracking-wide mb-4">
+                  <span>Everything in Opening Scene, plus:</span>
+                </div>
+ 
+                <ul className="space-y-4 text-sm text-white font-sans">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-4 h-4 text-[#6f9fd8] shrink-0 mt-0.5" />
+                    <span className="leading-snug text-white/90">
+                      <strong className="font-bold">Private screening for you and a guest</strong>: an exclusive pre-release viewing experience before the general public
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <div className="mt-4">
+                  <a 
+                    href="https://form.jotform.com/260926137459162" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 text-center text-xs font-display uppercase tracking-widest bg-[#6f9fd8] hover:bg-[#7fafe8] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-bold rounded-xl block shadow-md"
+                  >
+                    Secure the Spotlight
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white border border-brand-gold/50 rounded-xl shadow-md flex flex-col overflow-hidden">
-            <div className="bg-black text-white text-center py-8 px-6">
-              <h4 className="text-3xl font-display text-brand-gold tracking-widest uppercase">Premiere</h4>
-              <div className="text-gray-400 text-lg font-bold mt-2">$100,000+</div>
+          {/* MARQUEE */}
+          <div className="bg-brand-blue rounded-2xl border border-brand-gold/15 overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-brand-gold/45 shadow-lg group relative">
+            <div 
+              className="bg-cover bg-center h-48 relative flex items-end p-5 bg-[#0B1F3B]"
+              style={{ backgroundImage: "url('https://coopsimms.com/notes/samplecfcards/images/marquee.jpg')" }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-blue via-brand-blue/35 to-transparent z-0"></div>
+              <div className="relative z-10 w-full mt-auto">
+                <span className="block w-8 h-0.5 rounded bg-brand-red mb-2"></span>
+                <div className="font-display text-2xl lg:text-3xl uppercase tracking-wider text-white">Marquee</div>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="font-display text-sm md:text-base text-white/80">$30,000+</span>
+                  <span className="text-[10px] font-black tracking-widest text-[#e7d8b4]/65 uppercase">6+ Units</span>
+                </div>
+              </div>
             </div>
-            <div className="p-8 flex-grow flex flex-col">
-              <p className="text-sm font-bold uppercase tracking-widest text-brand-red mb-6 text-center">Highest participation, access, and recognition</p>
-              <div className="text-xs font-bold text-text-muted mb-4 uppercase bg-gray-50 p-2 rounded text-center">Everything in Marquee, plus:</div>
-              <ul className="space-y-4 text-sm text-text-muted flex-grow">
-                <li className="flex items-start gap-3"><Check className="w-5 h-5 text-brand-red shrink-0" /> Premiere On Set Bundle* (Set visit, private producer event, festival/launch invitation, highest acknowledgment)</li>
-              </ul>
+            <div className="p-5 flex-grow flex flex-col justify-between text-white font-sans">
+              <div>
+                <p className="font-display uppercase tracking-widest text-xs tracking-[0.12em] text-brand-red font-bold mb-4">Premium Access</p>
+                
+                <div className="flex items-center gap-2.5 font-bold text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-xs tracking-wide mb-4">
+                  <span>Everything in Spotlight, plus:</span>
+                </div>
+ 
+                <ul className="space-y-4 text-sm text-white font-sans">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-4 h-4 text-brand-red shrink-0 mt-0.5" />
+                    <span className="leading-snug text-white/90">
+                      <strong className="font-bold">Memorabilia bundle</strong>: signed poster, commemorative item, and a copy of the original script
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-4 h-4 text-brand-red shrink-0 mt-0.5" />
+                    <span className="leading-snug text-white/90">
+                      <strong className="font-bold">Marquee bundle</strong>: premiere invitation, ticket access, and a special thanks acknowledgment
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <div className="bg-brand-red/10 border-l-4 border-brand-red p-3.5 rounded-r-xl my-4 text-left">
+                  <div className="font-display text-sm tracking-wider text-brand-red uppercase font-bold">Associate Producer Credit</div>
+                  <div className="text-[10px] text-white/65 mt-0.5">Reg D 506(c) Investor Recognition</div>
+                </div>
+                <div className="mt-4">
+                  <a 
+                    href="https://form.jotform.com/260926137459162" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 text-center text-xs font-display uppercase tracking-widest bg-brand-red hover:bg-red-700 text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-bold rounded-xl block shadow-lg"
+                  >
+                    Become a Producer
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* PREMIERE */}
+          <div className="bg-brand-blue rounded-2xl border border-brand-gold/15 overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-brand-gold/45 shadow-lg group relative">
+            <div 
+              className="bg-cover bg-center h-48 relative flex items-end p-5 bg-[#0B1F3B]"
+              style={{ backgroundImage: "url('https://coopsimms.com/notes/samplecfcards/images/premiere.jpg')" }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-blue via-brand-blue/35 to-transparent z-0"></div>
+              <div className="relative z-10 w-full mt-auto">
+                <span className="block w-8 h-0.5 rounded bg-brand-gold mb-2"></span>
+                <div className="font-display text-2xl lg:text-3xl uppercase tracking-wider text-white">Premiere</div>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="font-display text-sm md:text-base text-white/80">$100,000+</span>
+                  <span className="text-[10px] font-black tracking-widest text-[#e7d8b4]/60 uppercase">20+ Units</span>
+                </div>
+              </div>
+            </div>
+            <div className="p-5 flex-grow flex flex-col justify-between text-white font-sans">
+              <div>
+                <p className="font-display uppercase tracking-widest text-xs tracking-[0.12em] text-brand-gold font-bold mb-4">Highest Recognition &amp; Access</p>
+                
+                <div className="flex items-center gap-2.5 font-bold text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-xs tracking-wide mb-4">
+                  <span>Everything in Marquee, plus:</span>
+                </div>
+ 
+                <ul className="space-y-4 text-sm text-white font-sans">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
+                    <span className="leading-snug text-white/90">
+                      <strong className="font-bold">Premiere on-set bundle</strong>: an exclusive set visit, private producer event, and invitation to the festival or launch premiere
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-3 font-sans">
+                    <Check className="w-4 h-4 text-brand-gold shrink-0 mt-0.5" />
+                    <span className="leading-snug text-white/90">
+                      <strong className="font-bold">A speaking role in the film</strong>: for you, a friend, a family member, or anyone you choose
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <div className="bg-brand-gold/10 border-l-4 border-brand-gold p-3.5 rounded-r-xl my-4 text-left">
+                  <div className="font-display text-sm tracking-wider text-brand-gold uppercase font-bold">Executive Producer Credit</div>
+                  <div className="text-[10px] text-white/65 mt-0.5">Reg D 506(c) Investor Recognition</div>
+                </div>
+                <div className="mt-4">
+                  <a 
+                    href="https://form.jotform.com/260926137459162" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 text-center text-xs font-display uppercase tracking-widest bg-brand-gold hover:bg-brand-gold/80 text-black hover:scale-[1.02] active:scale-[0.98] transition-all font-bold rounded-xl block shadow-md"
+                  >
+                    Become a Producer
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div className="mt-12 text-center">
+
+        {/* Member Unit Economics info box */}
+        <div className="mt-12 p-6 rounded-2xl border border-[#C8A24A]/20 bg-[#0B1F3B] hover:border-[#C8A24A]/30 transition-all text-sm leading-relaxed max-w-4xl mx-auto shadow-md">
+          <p className="text-white/90">
+            <strong className="text-brand-gold font-bold mr-1.5 tracking-wider uppercase text-xs">Member Unit Economics — Included for Every Tier:</strong>
+            Repayment of invested capital; 20% preferred return; 10% discounted Membership Units in the next qualified Reg CF offering; priority access to designated incentive proceeds subject to availability and prior allocations; upside participation; pro rata rights; priority / first-priority allocation rights if limited; MFN economic terms protection.
+          </p>
+        </div>
+
+        <div className="mt-8 text-center">
           <p className="text-[10px] md:text-xs text-text-muted italic max-w-4xl mx-auto leading-relaxed">
             * Investor Benefit bundles are courtesy benefits only and are subject to the offering documents, investment tier, availability, scheduling, production realities, legal requirements, and production approval where applicable.
           </p>
@@ -555,7 +726,7 @@ const TheDeck = () => {
 
   return (
     <section id="deck" className="py-24 bg-brand-blue text-white border-t border-brand-gold/20">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
         <div className="text-center mb-12">
           <h2 className="text-5xl md:text-7xl font-display text-brand-gold mb-4">INVESTOR DECK</h2>
         </div>
@@ -679,7 +850,7 @@ const TheTeam = () => {
 
   return (
     <section id="team" className="tailored-section border-b-0 py-12 md:py-16">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
         <h2 className="text-5xl md:text-7xl font-display text-brand-blue mb-12 text-center">THE TEAM</h2>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -795,7 +966,7 @@ const FAQ = () => {
 
   return (
     <section id="faq" className="py-24 bg-background relative z-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1100px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
         <div className="text-center mb-16">
           <h2 className="text-5xl md:text-7xl font-display text-brand-blue mb-4">FAQ</h2>
         </div>
@@ -836,7 +1007,7 @@ const FAQ = () => {
 
 const Footer = () => (
   <footer className="bg-brand-blue text-white py-20 border-t border-brand-gold/30">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-[1536px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
         <div className="md:col-span-4 space-y-10">
           <a href="/" className="block">
@@ -906,7 +1077,7 @@ const StickyFooter = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="fixed bottom-0 left-0 w-full bg-white/98 backdrop-blur-xl border-t border-brand-gold/20 z-50 p-4 md:p-6 shadow-[0_-15px_50px_rgba(0,0,0,0.15)]"
         >
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 md:gap-12">
+          <div className="max-w-[1536px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 md:gap-12 px-6 sm:px-12 lg:px-20 xl:px-24 w-full">
             <div className="flex-1 w-full">
               <div className="flex items-center justify-between mb-3 gap-2">
                 <div className="flex flex-row items-center gap-3 sm:gap-6">
@@ -926,15 +1097,15 @@ const StickyFooter = () => {
                   </div>
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Goal</span>
-                    <span className="text-sm sm:text-xl font-display text-gray-400 leading-none">$1,000,000</span>
+                    <span className="text-sm sm:text-xl font-display text-gray-400 leading-none">$2,000,000</span>
                   </div>
                 </div>
               </div>
               <div className="progress-bar-bg flex w-full relative">
-                <div className="progress-bar-fill" style={{ width: '78.5%' }}>
+                <div className="progress-bar-fill" style={{ width: '39.25%' }}>
                   <div className="absolute inset-0 bg-white/10 animate-pulse"></div>
                 </div>
-                <div className="progress-bar-committed" style={{ width: '2.5%' }}></div>
+                <div className="progress-bar-committed" style={{ width: '1.25%' }}></div>
               </div>
             </div>
             
