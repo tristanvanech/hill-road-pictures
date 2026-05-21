@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { Document, Page, pdfjs } from 'react-pdf';
+import { navigate } from './router';
 
 // Set up the PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -142,9 +143,8 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
             
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-12">
               <a 
-                href="https://form.jotform.com/260926137459162" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                href="/invest"
+                onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
                 className="w-full sm:w-auto bg-brand-red text-white px-6 md:px-8 py-3 md:py-4 text-lg md:text-xl font-display uppercase tracking-wider hover:bg-red-700 transition-colors flex items-center justify-center gap-2 group shadow-lg"
               >
                 Invest Now
@@ -517,9 +517,8 @@ const TheOffering = () => (
               <div>
                 <div className="mt-4">
                   <a 
-                    href="https://form.jotform.com/260926137459162" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                    href="/invest"
+                    onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-[#e7d8b4] hover:bg-[#ebdcb4] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
                     Reserve your spot
@@ -565,9 +564,8 @@ const TheOffering = () => (
               <div>
                 <div className="mt-4">
                   <a 
-                    href="https://form.jotform.com/260926137459162" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                    href="/invest"
+                    onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-[#6f9fd8] hover:bg-[#7fafe8] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
                     Reserve your spot
@@ -623,9 +621,8 @@ const TheOffering = () => (
                 </div>
                 <div className="mt-4">
                   <a 
-                    href="https://form.jotform.com/260926137459162" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                    href="/invest"
+                    onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-brand-red hover:bg-red-700 text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-lg"
                   >
                     Become a Producer
@@ -681,9 +678,8 @@ const TheOffering = () => (
                 </div>
                 <div className="mt-4">
                   <a 
-                    href="https://form.jotform.com/260926137459162" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                    href="/invest"
+                    onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-brand-gold hover:bg-brand-gold/80 text-black hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
                     Become a Producer
@@ -972,7 +968,7 @@ const FAQ = () => {
       question: "How will the crowdfunded Community Round happen and how can I help?",
       answer: (
         <>
-          Following this private Accredited round, we will launch a $5M Regulation Crowdfunding (RegCF) 'Community Round' in May. This allows non-accredited fans and the general public to own a piece of the film. You can help by <a href="https://www.jotform.com/form/260926137459162" target="_blank" rel="noopener noreferrer" className="text-brand-red font-bold hover:underline">joining our mailing list</a> and sharing the project with your community.
+          Following this private Accredited round, we will launch a $5M Regulation Crowdfunding (RegCF) 'Community Round' in May. This allows non-accredited fans and the general public to own a piece of the film. You can help by <a href="/invest" onClick={(e) => { e.preventDefault(); navigate('/invest'); }} className="text-brand-red font-bold hover:underline">joining our mailing list</a> and sharing the project with your community.
         </>
       )
     }
@@ -1125,9 +1121,8 @@ const StickyFooter = () => {
             
             <div className="flex items-center gap-4 w-full sm:w-auto shrink-0">
               <a 
-                href="https://form.jotform.com/260926137459162" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                href="/invest"
+                onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
                 className="w-full sm:w-auto bg-brand-red text-white px-10 py-4 text-xl font-display uppercase tracking-wider hover:bg-red-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl group"
               >
                 Invest Now
