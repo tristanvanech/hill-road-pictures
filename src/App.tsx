@@ -111,7 +111,7 @@ const Header = () => (
 
 const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
   return (
-    <div className="relative min-h-screen w-full flex flex-col justify-center pt-16 md:pt-28 pb-12 overflow-hidden">
+    <div className="relative min-h-screen w-full flex flex-col justify-center pt-20 md:pt-28 pb-12 overflow-hidden">
       <div className="max-w-[1536px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 w-full relative z-10">
         <div className="grid lg:grid-cols-12 gap-16 lg:gap-8 xl:gap-16 items-center mb-16">
           
@@ -120,17 +120,25 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-left lg:col-span-5"
+            className="text-left lg:col-span-12 xl:col-span-5"
           >
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <span className="bg-brand-red text-white text-xs md:text-sm font-bold px-3 py-1 uppercase tracking-widest">Reg D Accredited Investor Offering</span>
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <span className="bg-brand-red text-white text-xs md:text-sm font-black px-4 py-1.5 uppercase tracking-widest leading-none shadow-sm rounded">Reg D Accredited Investor Offering</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-sans font-black text-brand-red uppercase tracking-tighter mb-6 leading-[1.1]">
-              INVEST IN <span className="text-brand-blue">"SO, I'M THE CRAZY ONE?"</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-sans font-black text-brand-red uppercase tracking-tighter mb-4 leading-[1.1]">
+              INVEST IN <span className="text-brand-blue">"SO, <span className="italic">I'M</span> THE CRAZY ONE?"</span>
             </h1>
-            <p className="text-base md:text-xl text-gray-700 leading-relaxed mb-10 max-w-xl">
-              Get your front-row seat to the new era of creator-led cinema. Join us in producing the funniest R-rated comedy of the decade — with an ensemble cast of digital-native creators and mainstream actors commanding 200M+ followers, locking in a passionate fanbase before the camera rolls. Early investors are eligible for downside protection via first lien on GA tax credits, plus uncapped upside through our pioneering ownership model.
-            </p>
+            <div className="text-left text-sm md:text-base text-gray-700 leading-relaxed mb-6 max-w-2xl space-y-3 font-sans">
+              <p className="font-sans text-sm md:text-base text-gray-800 leading-relaxed font-normal">
+                Get your front-row seat to the new era of creator-led cinema. Join us in producing the funniest R-rated comedy of the decade — with an ensemble cast of internet stars and mainstream actors commanding 200M+ followers, locking in a passionate fanbase before the camera rolls.
+              </p>
+              <p className="font-mono text-xs text-slate-700 bg-slate-100 border-l-2 border-brand-red px-3 py-2.5 rounded-r leading-relaxed">
+                <strong className="font-bold text-gray-900 font-mono">The Pitch:</strong> After Dutch and his buddies get caught cheating, he breaks into a couples therapist's office to pose as a counselor to try and save their skins. He accidentally builds the hottest practice in town — until their girlfriends find out.
+              </p>
+              <p className="font-serif italic text-gray-600 text-xs md:text-sm">
+                Early investors are eligible for downside protection via a first lien on GA tax credits, plus uncapped upside through our pioneering ownership model.
+              </p>
+            </div>
             
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-12">
               <a 
@@ -349,8 +357,14 @@ const TheStory = ({ onWatchTrailer, onWatchFrank }: { onWatchTrailer: () => void
   <section id="story" className="py-24 bg-brand-blue text-white relative z-20 border-b border-brand-gold/20">
     <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
       <h2 className="text-6xl md:text-8xl font-display text-brand-gold mb-8 text-center">THE STORY</h2>
-      <p className="text-center text-xl md:text-2xl font-display text-white mb-16 uppercase tracking-widest">A <span className="italic">crazy</span> funny script that will <span className="text-brand-red">offend everyone</span></p>
+      <p className="text-center text-xl md:text-2xl font-display text-white mb-8 uppercase tracking-widest">A <span className="italic">crazy</span> funny script that will <span className="text-brand-red">offend everyone</span></p>
       
+      <div className="max-w-4xl mx-auto text-center mb-16">
+        <p className="text-base md:text-lg text-gray-200 leading-relaxed font-sans">
+          <strong className="text-brand-gold font-black tracking-wider uppercase">Meet Dutch Swithin:</strong> He does more than just tell women they're crazy when their boyfriend is obviously fooling around. He's here to speak his mind and say every taboo about you he can think of — no matter your race, color, or creed. But as his unfiltered insult-spewing inadvertently turns into decent advice, he's forced to prescribe himself a strong dose of self-reflection to make things right with his ex-wife before she moves across the world.
+        </p>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-12">
         {/* Frank Video */}
         <div className="space-y-6">
@@ -481,15 +495,15 @@ const TheOffering = () => (
               <div className="relative z-10 w-full mt-auto">
                 <span className="block w-8 h-0.5 rounded bg-[#e7d8b4] mb-2"></span>
                 <div className="font-display text-2xl lg:text-3xl uppercase tracking-wider text-white">Opening Scene</div>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="font-display text-sm md:text-base text-white/80">$5,000</span>
-                  <span className="text-[10px] font-black tracking-widest text-[#e7d8b4]/60 uppercase">1 Unit</span>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <span className="font-sans text-2xl md:text-3xl font-black text-white">$5,000</span>
+                  <span className="text-[10px] font-extrabold tracking-wider text-[#e7d8b4] uppercase bg-white/10 px-2 py-0.5 rounded border border-white/15">1 Unit</span>
                 </div>
               </div>
             </div>
             <div className="p-5 flex-grow flex flex-col justify-between text-white font-sans">
               <div>
-                <p className="font-display uppercase tracking-widest text-xs tracking-[0.12em] text-[#e7d8b4] font-bold mb-4">Entry-Level Participation</p>
+                <p className="font-sans uppercase tracking-[0.08em] text-sm font-black text-[#e7d8b4] mb-4">Entry-Level Participation</p>
                 
                 <ul className="space-y-4 text-sm text-white">
                   <li className="flex items-start gap-3">
@@ -506,9 +520,9 @@ const TheOffering = () => (
                     href="https://form.jotform.com/260926137459162" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 text-center text-xs font-display uppercase tracking-widest bg-[#e7d8b4] hover:bg-[#ebdcb4] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-bold rounded-xl block shadow-md"
+                    className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-[#e7d8b4] hover:bg-[#ebdcb4] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
-                    Greenlight the Scene
+                    Reserve your spot
                   </a>
                 </div>
               </div>
@@ -525,17 +539,17 @@ const TheOffering = () => (
               <div className="relative z-10 w-full mt-auto">
                 <span className="block w-8 h-0.5 rounded bg-[#6f9fd8] mb-2"></span>
                 <div className="font-display text-2xl lg:text-3xl uppercase tracking-wider text-white">Spotlight</div>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="font-display text-sm md:text-base text-white/80">$10,000+</span>
-                  <span className="text-[10px] font-black tracking-widest text-[#6f9fd8]/60 uppercase">2+ Units</span>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <span className="font-sans text-2xl md:text-3xl font-black text-white">$10,000+</span>
+                  <span className="text-[10px] font-extrabold tracking-wider text-[#6f9fd8] uppercase bg-white/10 px-2 py-0.5 rounded border border-white/15">2+ Units</span>
                 </div>
               </div>
             </div>
             <div className="p-5 flex-grow flex flex-col justify-between text-white font-sans">
               <div>
-                <p className="font-display uppercase tracking-widest text-xs tracking-[0.12em] text-[#6f9fd8] font-bold mb-4">Core Participation &amp; Screening Access</p>
+                <p className="font-sans uppercase tracking-[0.08em] text-sm font-black text-[#6f9fd8] mb-4">Core Participation &amp; Screening Access</p>
                 
-                <div className="flex items-center gap-2.5 font-bold text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-xs tracking-wide mb-4">
+                <div className="flex items-center gap-2.5 font-normal text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-sm italic mb-4">
                   <span>Everything in Opening Scene, plus:</span>
                 </div>
  
@@ -554,9 +568,9 @@ const TheOffering = () => (
                     href="https://form.jotform.com/260926137459162" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 text-center text-xs font-display uppercase tracking-widest bg-[#6f9fd8] hover:bg-[#7fafe8] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-bold rounded-xl block shadow-md"
+                    className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-[#6f9fd8] hover:bg-[#7fafe8] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
-                    Secure the Spotlight
+                    Reserve your spot
                   </a>
                 </div>
               </div>
@@ -573,17 +587,17 @@ const TheOffering = () => (
               <div className="relative z-10 w-full mt-auto">
                 <span className="block w-8 h-0.5 rounded bg-brand-red mb-2"></span>
                 <div className="font-display text-2xl lg:text-3xl uppercase tracking-wider text-white">Marquee</div>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="font-display text-sm md:text-base text-white/80">$30,000+</span>
-                  <span className="text-[10px] font-black tracking-widest text-[#e7d8b4]/65 uppercase">6+ Units</span>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <span className="font-sans text-2xl md:text-3xl font-black text-white">$30,000+</span>
+                  <span className="text-[10px] font-extrabold tracking-wider text-brand-red uppercase bg-white/10 px-2 py-0.5 rounded border border-white/15">6+ Units</span>
                 </div>
               </div>
             </div>
             <div className="p-5 flex-grow flex flex-col justify-between text-white font-sans">
               <div>
-                <p className="font-display uppercase tracking-widest text-xs tracking-[0.12em] text-brand-red font-bold mb-4">Premium Access</p>
+                <p className="font-sans uppercase tracking-[0.08em] text-sm font-black text-brand-red mb-4">Premium Access</p>
                 
-                <div className="flex items-center gap-2.5 font-bold text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-xs tracking-wide mb-4">
+                <div className="flex items-center gap-2.5 font-normal text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-sm italic mb-4">
                   <span>Everything in Spotlight, plus:</span>
                 </div>
  
@@ -612,7 +626,7 @@ const TheOffering = () => (
                     href="https://form.jotform.com/260926137459162" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 text-center text-xs font-display uppercase tracking-widest bg-brand-red hover:bg-red-700 text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-bold rounded-xl block shadow-lg"
+                    className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-brand-red hover:bg-red-700 text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-lg"
                   >
                     Become a Producer
                   </a>
@@ -631,17 +645,17 @@ const TheOffering = () => (
               <div className="relative z-10 w-full mt-auto">
                 <span className="block w-8 h-0.5 rounded bg-brand-gold mb-2"></span>
                 <div className="font-display text-2xl lg:text-3xl uppercase tracking-wider text-white">Premiere</div>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="font-display text-sm md:text-base text-white/80">$100,000+</span>
-                  <span className="text-[10px] font-black tracking-widest text-[#e7d8b4]/60 uppercase">20+ Units</span>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <span className="font-sans text-2xl md:text-3xl font-black text-white">$100,000+</span>
+                  <span className="text-[10px] font-extrabold tracking-wider text-brand-gold uppercase bg-white/10 px-2 py-0.5 rounded border border-white/15">20+ Units</span>
                 </div>
               </div>
             </div>
             <div className="p-5 flex-grow flex flex-col justify-between text-white font-sans">
               <div>
-                <p className="font-display uppercase tracking-widest text-xs tracking-[0.12em] text-brand-gold font-bold mb-4">Highest Recognition &amp; Access</p>
+                <p className="font-sans uppercase tracking-[0.08em] text-sm font-black text-brand-gold mb-4">Highest Recognition &amp; Access</p>
                 
-                <div className="flex items-center gap-2.5 font-bold text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-xs tracking-wide mb-4">
+                <div className="flex items-center gap-2.5 font-normal text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-sm italic mb-4">
                   <span>Everything in Marquee, plus:</span>
                 </div>
  
@@ -670,7 +684,7 @@ const TheOffering = () => (
                     href="https://form.jotform.com/260926137459162" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 text-center text-xs font-display uppercase tracking-widest bg-brand-gold hover:bg-brand-gold/80 text-black hover:scale-[1.02] active:scale-[0.98] transition-all font-bold rounded-xl block shadow-md"
+                    className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-brand-gold hover:bg-brand-gold/80 text-black hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
                     Become a Producer
                   </a>
@@ -932,11 +946,11 @@ const FAQ = () => {
   const faqs = [
     {
       question: "What is the minimum investment?",
-      answer: "For this Reg D Accredited Investor round, the minimum investment starts at $10,000 (Spotlight Tier). This secures your position before the offering opens to the general public."
+      answer: "For this offering, the minimum investment starts at $5,000 (Opening Scene tier). This secures your early position in our capital structure."
     },
     {
       question: "How does the Georgia tax credit work?",
-      answer: "Georgia offers a 30% transferable tax credit for film production. Our CASH instrument provides investors a first lien on these expected credits (estimated at $1.5M), providing significant downside protection compared to traditional film investments."
+      answer: "Georgia offers a 30% transferable tax credit for film production. Our CASH instrument provides investors a first lien on these expected credits (estimated at $1.5M), providing significant downside protection compared to traditional film investments. The benefit of the Georgia tax credit is subject to availability on a first-come, first-served basis."
     },
     {
       question: "When do we expect to shoot?",
