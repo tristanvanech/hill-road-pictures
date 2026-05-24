@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, ArrowRight, Check, X, Loader2, Sunrise, Sun, Sunset } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, X, Loader2, Sunrise, Sun, Sunset } from 'lucide-react';
 import { navigate, getUtmParams, type UtmParams } from './router';
 
 // --- Types ---
 
-type InvestmentLevel = '5000' | '25000' | '50000' | '100000' | 'other';
+type InvestmentLevel = '5000' | '10000' | '30000' | '100000' | 'other';
 type Accredited = 'yes' | 'no' | 'unsure';
 type CallbackTime = 'morning' | 'afternoon' | 'evening';
+type TimeZone = 'ET' | 'CT' | 'MT' | 'PT';
 
 interface LeadData {
   firstName: string;
@@ -17,8 +18,10 @@ interface LeadData {
   investmentLevel: InvestmentLevel | '';
   investmentOther: string;
   accredited: Accredited | '';
+  phoneCountry: string;
   callbackDate: string;
   callbackTime: CallbackTime | '';
+  timeZone: TimeZone | '';
   consent: boolean;
 }
 
@@ -34,18 +37,20 @@ const EMPTY_LEAD: LeadData = {
   lastName: '',
   email: '',
   phone: '',
+  phoneCountry: 'US',
   investmentLevel: '',
   investmentOther: '',
   accredited: '',
   callbackDate: '',
   callbackTime: '',
+  timeZone: '',
   consent: false,
 };
 
 const INVESTMENT_OPTIONS: { value: InvestmentLevel; label: string }[] = [
   { value: '5000', label: '$5,000' },
-  { value: '25000', label: '$25,000' },
-  { value: '50000', label: '$50,000' },
+  { value: '10000', label: '$10,000' },
+  { value: '30000', label: '$30,000' },
   { value: '100000', label: '$100,000' },
   { value: 'other', label: 'Other amount' },
 ];
@@ -61,6 +66,80 @@ const TIME_OPTIONS: { value: CallbackTime; label: string; Icon: typeof Sun }[] =
   { value: 'afternoon', label: 'Afternoon', Icon: Sun },
   { value: 'evening', label: 'Evening', Icon: Sunset },
 ];
+
+const TIMEZONE_OPTIONS: { value: TimeZone; label: string }[] = [
+  { value: 'ET', label: 'Eastern Time' },
+  { value: 'CT', label: 'Central Time' },
+  { value: 'MT', label: 'Mountain Time' },
+  { value: 'PT', label: 'Pacific Time' },
+];
+
+interface Country {
+  code: string; // ISO 3166-1 alpha-2
+  name: string;
+  dialCode: string;
+}
+
+// USA first (default) and Canada second; rest alphabetical. Curated for a
+// US-focused offering with reasonable international coverage.
+const COUNTRIES: Country[] = [
+  { code: 'US', name: 'United States', dialCode: '1' },
+  { code: 'CA', name: 'Canada', dialCode: '1' },
+  { code: 'AR', name: 'Argentina', dialCode: '54' },
+  { code: 'AU', name: 'Australia', dialCode: '61' },
+  { code: 'AT', name: 'Austria', dialCode: '43' },
+  { code: 'BE', name: 'Belgium', dialCode: '32' },
+  { code: 'BR', name: 'Brazil', dialCode: '55' },
+  { code: 'CL', name: 'Chile', dialCode: '56' },
+  { code: 'CN', name: 'China', dialCode: '86' },
+  { code: 'CO', name: 'Colombia', dialCode: '57' },
+  { code: 'CZ', name: 'Czech Republic', dialCode: '420' },
+  { code: 'DK', name: 'Denmark', dialCode: '45' },
+  { code: 'EG', name: 'Egypt', dialCode: '20' },
+  { code: 'FI', name: 'Finland', dialCode: '358' },
+  { code: 'FR', name: 'France', dialCode: '33' },
+  { code: 'DE', name: 'Germany', dialCode: '49' },
+  { code: 'GR', name: 'Greece', dialCode: '30' },
+  { code: 'HK', name: 'Hong Kong', dialCode: '852' },
+  { code: 'HU', name: 'Hungary', dialCode: '36' },
+  { code: 'IN', name: 'India', dialCode: '91' },
+  { code: 'ID', name: 'Indonesia', dialCode: '62' },
+  { code: 'IE', name: 'Ireland', dialCode: '353' },
+  { code: 'IL', name: 'Israel', dialCode: '972' },
+  { code: 'IT', name: 'Italy', dialCode: '39' },
+  { code: 'JP', name: 'Japan', dialCode: '81' },
+  { code: 'MX', name: 'Mexico', dialCode: '52' },
+  { code: 'NL', name: 'Netherlands', dialCode: '31' },
+  { code: 'NZ', name: 'New Zealand', dialCode: '64' },
+  { code: 'NO', name: 'Norway', dialCode: '47' },
+  { code: 'PH', name: 'Philippines', dialCode: '63' },
+  { code: 'PL', name: 'Poland', dialCode: '48' },
+  { code: 'PT', name: 'Portugal', dialCode: '351' },
+  { code: 'RO', name: 'Romania', dialCode: '40' },
+  { code: 'RU', name: 'Russia', dialCode: '7' },
+  { code: 'SA', name: 'Saudi Arabia', dialCode: '966' },
+  { code: 'SG', name: 'Singapore', dialCode: '65' },
+  { code: 'ZA', name: 'South Africa', dialCode: '27' },
+  { code: 'KR', name: 'South Korea', dialCode: '82' },
+  { code: 'ES', name: 'Spain', dialCode: '34' },
+  { code: 'SE', name: 'Sweden', dialCode: '46' },
+  { code: 'CH', name: 'Switzerland', dialCode: '41' },
+  { code: 'TW', name: 'Taiwan', dialCode: '886' },
+  { code: 'TH', name: 'Thailand', dialCode: '66' },
+  { code: 'TR', name: 'Turkey', dialCode: '90' },
+  { code: 'UA', name: 'Ukraine', dialCode: '380' },
+  { code: 'AE', name: 'United Arab Emirates', dialCode: '971' },
+  { code: 'GB', name: 'United Kingdom', dialCode: '44' },
+  { code: 'VN', name: 'Vietnam', dialCode: '84' },
+];
+
+function getCountry(code: string): Country {
+  return COUNTRIES.find((c) => c.code === code) ?? COUNTRIES[0];
+}
+
+function isNANP(code: string): boolean {
+  return code === 'US' || code === 'CA';
+}
 
 const DISCLAIMER =
   'This offering is being made under Rule 506(c) of Regulation D. Only accredited investors as defined by the SEC are eligible to participate. Investing in independent film involves significant risk, including the potential loss of your entire investment. Past performance of the production team is not a guarantee of future results.';
@@ -108,6 +187,13 @@ function formatUSPhone(value: string): string {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
+/** Per-country phone formatting. NANP gets the pretty US format; others stay
+ * as plain digits up to the E.164 max of 15. */
+function formatPhone(country: string, value: string): string {
+  if (isNANP(country)) return formatUSPhone(value);
+  return value.replace(/\D/g, '').slice(0, 15);
+}
+
 function validateStep(step: number, d: LeadData): FieldErrors {
   const e: FieldErrors = {};
 
@@ -116,9 +202,13 @@ function validateStep(step: number, d: LeadData): FieldErrors {
     if (!d.lastName.trim()) e.lastName = 'Please enter your last name.';
     if (!d.email.trim()) e.email = 'Please enter your email address.';
     else if (!EMAIL_RE.test(d.email.trim())) e.email = 'Please enter a valid email address.';
-    if (!d.phone.trim()) e.phone = 'Please enter your phone number.';
-    else if (d.phone.replace(/\D/g, '').length < 10)
-      e.phone = 'Please enter a valid phone number.';
+    if (!d.phone.trim()) {
+      e.phone = 'Please enter your phone number.';
+    } else {
+      const digits = d.phone.replace(/\D/g, '');
+      const minDigits = isNANP(d.phoneCountry) ? 10 : 6;
+      if (digits.length < minDigits) e.phone = 'Please enter a valid phone number.';
+    }
   } else if (step === 2) {
     if (!d.investmentLevel) {
       e.investmentLevel = 'Please choose an investment level.';
@@ -135,6 +225,7 @@ function validateStep(step: number, d: LeadData): FieldErrors {
       e.callbackDate = 'Please choose today or a future date.';
     }
     if (!d.callbackTime) e.callbackTime = 'Please choose a preferred time.';
+    if (!d.timeZone) e.timeZone = 'Please choose your time zone.';
   }
 
   return e;
@@ -254,13 +345,16 @@ export function InvestForm() {
     setSubmitting(true);
     setSubmitError('');
     try {
-      await submitLead({ ...data, ...utms });
+      const dialCode = getCountry(data.phoneCountry).dialCode;
+      const phoneFull = data.phone ? `+${dialCode} ${data.phone}` : '';
+      await submitLead({ ...data, phone: phoneFull, ...utms });
       sessionStorage.setItem(
         'hrp_lead',
         JSON.stringify({
           firstName: data.firstName.trim(),
           callbackDate: data.callbackDate,
           callbackTime: data.callbackTime,
+          timeZone: data.timeZone,
         }),
       );
       navigate('/thank-you');
@@ -450,6 +544,28 @@ interface StepProps {
 }
 
 function Step1({ data, errors, update }: StepProps) {
+  const [countryOpen, setCountryOpen] = useState(false);
+  const countryRef = useRef<HTMLDivElement>(null);
+  const currentCountry = getCountry(data.phoneCountry);
+
+  useEffect(() => {
+    if (!countryOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (countryRef.current && !countryRef.current.contains(e.target as Node)) {
+        setCountryOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setCountryOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [countryOpen]);
+
   return (
     <div>
       <StepHeading step={1} title="Your info" />
@@ -506,17 +622,71 @@ function Step1({ data, errors, update }: StepProps) {
           <label htmlFor="phone" className="mb-1.5 block text-sm font-bold uppercase tracking-wide text-brand-blue">
             Phone number
           </label>
-          <input
-            id="phone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="(555) 123-4567"
-            value={data.phone}
-            onChange={(e) => update({ phone: formatUSPhone(e.target.value) })}
-            className={inputClasses(!!errors.phone)}
-            aria-invalid={!!errors.phone}
-          />
+          <div className="flex items-stretch gap-2">
+            <div className="relative" ref={countryRef}>
+              <button
+                type="button"
+                onClick={() => setCountryOpen((o) => !o)}
+                aria-haspopup="listbox"
+                aria-expanded={countryOpen}
+                aria-label={`Country: ${currentCountry.name}`}
+                className={`inline-flex h-full items-center gap-1.5 rounded-xl border-2 bg-white px-3 text-base font-bold text-brand-blue transition focus:outline-none focus:ring-2 focus:ring-brand-red/15 ${
+                  errors.phone ? 'border-brand-red' : 'border-brand-blue/15 hover:border-brand-blue/30'
+                }`}
+              >
+                +{currentCountry.dialCode}
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${countryOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+              {countryOpen && (
+                <div
+                  role="listbox"
+                  className="absolute left-0 top-[calc(100%+4px)] z-30 max-h-72 w-72 max-w-[calc(100vw-2.5rem)] overflow-y-auto rounded-xl border-2 border-brand-blue/15 bg-white shadow-xl"
+                >
+                  {COUNTRIES.map((c) => {
+                    const selected = data.phoneCountry === c.code;
+                    return (
+                      <button
+                        key={c.code}
+                        type="button"
+                        role="option"
+                        aria-selected={selected}
+                        onClick={() => {
+                          update({
+                            phoneCountry: c.code,
+                            phone: formatPhone(c.code, data.phone),
+                          });
+                          setCountryOpen(false);
+                        }}
+                        className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors ${
+                          selected
+                            ? 'bg-brand-red/5 font-bold text-brand-red'
+                            : 'text-brand-blue hover:bg-brand-blue/5'
+                        }`}
+                      >
+                        <span className="w-12 shrink-0 font-mono text-xs text-brand-blue/55 tabular-nums">
+                          +{c.dialCode}
+                        </span>
+                        <span>{c.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            <input
+              id="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder={isNANP(data.phoneCountry) ? '(555) 123-4567' : 'Phone number'}
+              value={data.phone}
+              onChange={(e) => update({ phone: formatPhone(data.phoneCountry, e.target.value) })}
+              className={`flex-1 min-w-0 ${inputClasses(!!errors.phone)}`}
+              aria-invalid={!!errors.phone}
+            />
+          </div>
           <FieldError message={errors.phone} />
         </div>
       </div>
@@ -642,6 +812,33 @@ function Step4({ data, errors, update }: StepProps) {
             })}
           </div>
           <FieldError message={errors.callbackTime} />
+        </div>
+
+        <div>
+          <span className="mb-1.5 block text-sm font-bold uppercase tracking-wide text-brand-blue">
+            Your time zone
+          </span>
+          <div className="grid grid-cols-2 gap-3" role="group" aria-label="Your time zone">
+            {TIMEZONE_OPTIONS.map((opt) => {
+              const selected = data.timeZone === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => update({ timeZone: opt.value })}
+                  aria-pressed={selected}
+                  className={`rounded-xl border-2 px-3 py-3 text-sm font-bold transition-all ${
+                    selected
+                      ? 'border-brand-red bg-brand-red/5 text-brand-red shadow-md'
+                      : 'border-brand-blue/15 bg-white text-brand-blue hover:border-brand-blue/40 active:scale-[0.98]'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+          <FieldError message={errors.timeZone} />
         </div>
 
         <label

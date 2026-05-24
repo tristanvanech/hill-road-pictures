@@ -19,6 +19,7 @@ export function ThankYou() {
   const [firstName, setFirstName] = useState('');
   const [callbackDate, setCallbackDate] = useState('');
   const [callbackTime, setCallbackTime] = useState('');
+  const [timeZone, setTimeZone] = useState('');
 
   useEffect(() => {
     document.title = "Thank You — So, I'm the Crazy One?";
@@ -30,10 +31,12 @@ export function ThankYou() {
           firstName?: string;
           callbackDate?: string;
           callbackTime?: string;
+          timeZone?: string;
         };
         if (parsed.firstName) setFirstName(parsed.firstName);
         if (parsed.callbackDate) setCallbackDate(parsed.callbackDate);
         if (parsed.callbackTime) setCallbackTime(parsed.callbackTime);
+        if (parsed.timeZone) setTimeZone(parsed.timeZone);
       }
     } catch {
       /* ignore malformed storage */
@@ -51,6 +54,7 @@ export function ThankYou() {
 
   const prettyDate = callbackDate ? formatDate(callbackDate) : '';
   const timePhrase = TIME_PHRASE[callbackTime] ?? '';
+  const tzSuffix = timeZone ? ` (${timeZone})` : '';
 
   return (
     <div className="min-h-screen bg-brand-blue flex flex-col items-center justify-center px-5 py-12 text-center">
@@ -83,7 +87,7 @@ export function ThankYou() {
         <p className="text-white/80 text-base sm:text-lg leading-relaxed mb-3">
           Your details are in. Frank and Bob will personally reach out
           {prettyDate
-            ? ` around ${prettyDate}${timePhrase ? ` ${timePhrase}` : ''}`
+            ? ` around ${prettyDate}${timePhrase ? ` ${timePhrase}` : ''}${tzSuffix}`
             : ' shortly'}{' '}
           to talk through the opportunity one-on-one.
         </p>
