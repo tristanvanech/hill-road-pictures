@@ -321,6 +321,7 @@ export function InvestForm() {
   useEffect(() => {
     document.title = "Invest — So, I'm the Crazy One?";
     window.gtag?.('event', 'page_view', { page_path: '/invest', page_title: 'Invest' });
+    (window as any).fbq?.('track', 'PageView');
   }, []);
 
   useEffect(() => {

@@ -50,6 +50,9 @@ export function ThankYou() {
       page_title: 'Thank You',
     });
     window.gtag?.('event', 'generate_lead');
+
+    // Meta Pixel conversion tracking
+    (window as any).fbq?.('track', 'Lead');
   }, []);
 
   const prettyDate = callbackDate ? formatDate(callbackDate) : '';
