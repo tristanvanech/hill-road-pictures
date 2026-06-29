@@ -89,7 +89,7 @@ const Header = () => (
           <a href="/" className="block">
             <img 
               src="/SITCO Primary Wordmark single line white transparent v2.png" 
-              alt="SITCO" 
+              alt="So, I'm the Crazy One?" 
               className="h-5 md:h-10 w-auto hover:opacity-80 transition-opacity"
               referrerPolicy="no-referrer"
             />
@@ -147,7 +147,7 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
                 }}
                 className="w-full sm:w-auto bg-brand-red text-white px-6 md:px-8 py-3 md:py-4 text-lg md:text-xl font-display uppercase tracking-wider hover:bg-red-700 transition-colors flex items-center justify-center gap-2 group shadow-lg"
               >
-                Invest Now
+                Learn More
                 <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
               </a>
               <button 
@@ -357,7 +357,7 @@ const MarketLandscape = () => (
           ))}
         </div>
         <div className="mt-8 text-center text-[10px] text-gray-400 uppercase tracking-widest">
-          Source: Box Office Mojo, SITCO R-Rated Comedy Analysis (March 2026). Includes Domestic, Foreign, and Home Video.
+          Source: Box Office Mojo, "So, I'm the Crazy One?" R-Rated Comedy Analysis (March 2026). Includes Domestic, Foreign, and Home Video.
         </div>
       </div>
     </div>
@@ -370,7 +370,7 @@ const TheStory = ({ onWatchTrailer, onWatchFrank }: { onWatchTrailer: () => void
       <div className="flex justify-center mb-6" id="story-logo-container">
         <img 
           src="/sitco-lawn-chair.jpg" 
-          alt="SITCO Lawn Chair" 
+          alt="Lawn Chair" 
           className="w-16 h-16 md:w-20 md:h-20 rounded-2xl border-2 border-brand-gold p-1 bg-brand-blue/40 shadow-2xl object-cover hover:scale-105 transition-transform duration-300"
           id="story-logo"
         />
@@ -536,10 +536,10 @@ const TheOffering = () => (
               <div>
                 <div className="mt-4">
                   <a 
-                    href="/invest" 
+                    href="/invest?amount=5000" 
                     onClick={(e) => {
                       e.preventDefault();
-                      navigate('/invest');
+                      navigate('/invest?amount=5000');
                     }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-[#e7d8b4] hover:bg-[#ebdcb4] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
@@ -586,10 +586,10 @@ const TheOffering = () => (
               <div>
                 <div className="mt-4">
                   <a 
-                    href="/invest" 
+                    href="/invest?amount=10000" 
                     onClick={(e) => {
                       e.preventDefault();
-                      navigate('/invest');
+                      navigate('/invest?amount=10000');
                     }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-[#6f9fd8] hover:bg-[#7fafe8] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
@@ -646,10 +646,10 @@ const TheOffering = () => (
                 </div>
                 <div className="mt-4">
                   <a 
-                    href="/invest" 
+                    href="/invest?amount=30000" 
                     onClick={(e) => {
                       e.preventDefault();
-                      navigate('/invest');
+                      navigate('/invest?amount=30000');
                     }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-brand-red hover:bg-red-700 text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-lg"
                   >
@@ -706,10 +706,10 @@ const TheOffering = () => (
                 </div>
                 <div className="mt-4">
                   <a 
-                    href="/invest" 
+                    href="/invest?amount=100000" 
                     onClick={(e) => {
                       e.preventDefault();
-                      navigate('/invest');
+                      navigate('/invest?amount=100000');
                     }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-brand-gold hover:bg-brand-gold/80 text-black hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
@@ -1079,7 +1079,7 @@ const Footer = () => (
             <a href="/" className="block">
               <img 
                 src="/SITCO Primary Wordmark single line white transparent v2.png" 
-                alt="SITCO" 
+                alt="So, I'm the Crazy One?" 
                 className="h-10 w-auto hover:opacity-80 transition-opacity"
                 referrerPolicy="no-referrer"
               />
@@ -1175,7 +1175,7 @@ const StickyFooter = () => {
                 }}
                 className="w-full sm:w-auto bg-brand-red text-white px-10 py-4 text-xl font-display uppercase tracking-wider hover:bg-red-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl group"
               >
-                Invest Now
+                Learn More
                 <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
