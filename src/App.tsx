@@ -141,6 +141,8 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-6 md:mb-12">
               <a 
                 href="/invest" 
+                data-meta-event="ClickInvest"
+                data-meta-location="hero"
                 onClick={(e) => {
                   e.preventDefault();
                   navigate('/invest');
@@ -152,6 +154,8 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
               </a>
               <button 
                 onClick={() => onWatchVideo('0rtorNlIbyk')}
+                data-meta-event="WatchTrailer"
+                data-meta-location="hero"
                 className="w-full sm:w-auto bg-white text-brand-blue border-2 border-brand-blue px-6 md:px-8 py-3 md:py-4 text-lg md:text-xl font-display uppercase tracking-wider hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center gap-2 group shadow-lg"
               >
                 Watch Trailer
@@ -210,6 +214,8 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
           {/* Trailer Thumbnail */}
           <button 
             onClick={() => onWatchVideo('0rtorNlIbyk')}
+            data-meta-event="WatchTrailer"
+            data-meta-location="poster"
             className="relative group block z-10 hover:z-50 md:rotate-3 text-left w-full"
           >
             <div className="absolute -top-10 md:-top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0 z-20 pointer-events-none rotate-[-2deg]">
@@ -232,6 +238,8 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
           {/* Founder Thumbnail */}
           <button 
             onClick={() => onWatchVideo('v2HNpdwWyls')}
+            data-meta-event="WatchVideo"
+            data-meta-content-name="Writer Interview"
             className="relative group block z-20 hover:z-50 md:-rotate-2 mt-8 md:mt-0 text-left w-full"
           >
             <div className="absolute -top-10 md:-top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0 z-20 pointer-events-none rotate-[1deg]">
@@ -389,7 +397,10 @@ const TheStory = ({ onWatchTrailer, onWatchFrank }: { onWatchTrailer: () => void
         <div className="space-y-6">
           <button 
             onClick={onWatchFrank}
-            className="w-full relative aspect-video bg-black rounded-lg border-8 border-white shadow-2xl overflow-hidden group"
+            data-meta-event="WatchVideo"
+            data-meta-content-name="Writer Interview"
+            data-meta-location="story"
+            className="w-full relative aspect-video bg-black rounded-lg border-8 border-white shadow-2xl overflow-hidden group text-left"
           >
             <img src="/Frank The Writer Video Thumbnail.png" className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" alt="Frank" />
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
@@ -408,7 +419,9 @@ const TheStory = ({ onWatchTrailer, onWatchFrank }: { onWatchTrailer: () => void
         <div className="space-y-6">
           <button 
             onClick={onWatchTrailer}
-            className="w-full relative aspect-video bg-black rounded-lg border-8 border-white shadow-2xl overflow-hidden group"
+            data-meta-event="WatchTrailer"
+            data-meta-location="story"
+            className="w-full relative aspect-video bg-black rounded-lg border-8 border-white shadow-2xl overflow-hidden group text-left"
           >
             <img src="/poster-horizontal.png" className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" alt="Trailer" />
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
@@ -537,6 +550,9 @@ const TheOffering = () => (
                 <div className="mt-4">
                   <a 
                     href="/invest?amount=5000" 
+                    data-meta-event="ClickInvest"
+                    data-meta-location="tier-5000"
+                    data-meta-value="5000"
                     onClick={(e) => {
                       e.preventDefault();
                       navigate('/invest?amount=5000');
@@ -587,6 +603,9 @@ const TheOffering = () => (
                 <div className="mt-4">
                   <a 
                     href="/invest?amount=10000" 
+                    data-meta-event="ClickInvest"
+                    data-meta-location="tier-10000"
+                    data-meta-value="10000"
                     onClick={(e) => {
                       e.preventDefault();
                       navigate('/invest?amount=10000');
@@ -647,6 +666,9 @@ const TheOffering = () => (
                 <div className="mt-4">
                   <a 
                     href="/invest?amount=30000" 
+                    data-meta-event="ClickInvest"
+                    data-meta-location="tier-30000"
+                    data-meta-value="30000"
                     onClick={(e) => {
                       e.preventDefault();
                       navigate('/invest?amount=30000');
@@ -707,6 +729,9 @@ const TheOffering = () => (
                 <div className="mt-4">
                   <a 
                     href="/invest?amount=100000" 
+                    data-meta-event="ClickInvest"
+                    data-meta-location="tier-100000"
+                    data-meta-value="100000"
                     onClick={(e) => {
                       e.preventDefault();
                       navigate('/invest?amount=100000');
@@ -845,6 +870,8 @@ const TheDeck = () => {
                 <a 
                   href="/4 10 26 Movie Investor Deck - Shareable.pdf" 
                   download
+                  data-meta-event="ViewContent"
+                  data-meta-content-name="Investor Deck"
                   className="flex items-center gap-2 bg-brand-red text-white px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-red-700 transition-colors shadow-sm"
                 >
                   <FileText className="w-4 h-4" />
@@ -1015,7 +1042,7 @@ const FAQ = () => {
       question: "How will the crowdfunded Community Round happen and how can I help?",
       answer: (
         <>
-          Following this private Accredited round, we will launch a $5M Regulation Crowdfunding (RegCF) 'Community Round' in June. This allows non-accredited fans and the general public to own a piece of the film. You can help by <a href="/invest" onClick={(e) => { e.preventDefault(); navigate('/invest'); }} className="text-brand-red font-bold hover:underline">joining our mailing list</a> and sharing the project with your community.
+          Following this private Accredited round, we will launch a $5M Regulation Crowdfunding (RegCF) 'Community Round' in June. This allows non-accredited fans and the general public to own a piece of the film. You can help by <a href="/invest" data-meta-event="ClickInvest" data-meta-location="inline-regcf" onClick={(e) => { e.preventDefault(); navigate('/invest'); }} className="text-brand-red font-bold hover:underline">joining our mailing list</a> and sharing the project with your community.
         </>
       )
     }
@@ -1169,6 +1196,8 @@ const StickyFooter = () => {
             <div className="flex items-center gap-4 w-full sm:w-auto shrink-0">
               <a 
                 href="/invest" 
+                data-meta-event="ClickInvest"
+                data-meta-location="footer"
                 onClick={(e) => {
                   e.preventDefault();
                   navigate('/invest');
@@ -1217,5 +1246,3 @@ export default function App() {
     </div>
   );
 }
-
-

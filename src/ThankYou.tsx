@@ -61,8 +61,9 @@ export function ThankYou() {
     });
     window.gtag?.('event', 'generate_lead');
 
-    // Meta Pixel conversion tracking
-    (window as any).fbq?.('track', 'Lead');
+    // Note: the Meta Pixel `Lead` event fires on form submit (see
+    // InvestForm.tsx handleSubmit), not here, so a refresh of this page
+    // does not double-count the conversion.
   }, []);
 
   const prettyDate = callbackDate ? formatDate(callbackDate) : '';

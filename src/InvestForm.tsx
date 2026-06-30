@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, X, Loader2, Sunrise, Sun, Sunset, FileText, Play, Phone } from 'lucide-react';
 import { navigate, getUtmParams, type UtmParams } from './router';
+import { trackMeta } from './meta';
 
 // --- Types ---
 
@@ -194,9 +195,9 @@ const COUNTRIES: Country[] = [
   { code: 'AE', name: 'United Arab Emirates', dialCode: '971' },
   { code: 'GB', name: 'United Kingdom', dialCode: '44' },
   { code: 'VN', name: 'Vietnam', dialCode: '84' },
-];
+] as const;
 
-function getCountry(code: string): Country {
+function getCountry(code: string): typeof COUNTRIES[number] {
   return COUNTRIES.find((c) => c.code === code) ?? COUNTRIES[0];
 }
 
@@ -431,18 +432,21 @@ function ChooserStep({ onSelect }: { onSelect: (interest: InterestType) => void 
             title: 'Send me the documents',
             desc: 'Request the investment offering documents directly to your inbox.',
             icon: FileText,
+            metaEvent: 'ChooseDocuments' as const,
           },
           {
             id: 'webinar' as const,
             title: 'Join a webinar',
             desc: 'Attend a live webinar session and discover how the film gets made and how the investment works.',
             icon: Play,
+            metaEvent: 'ChooseWebinar' as const,
           },
           {
             id: 'call' as const,
             title: 'Schedule a call',
             desc: 'Talk one-on-one with Frank and Bob to discuss investment details.',
             icon: Phone,
+            metaEvent: 'ChooseCall' as const,
           },
         ].map((opt) => {
           const Icon = opt.icon;
@@ -450,6 +454,8 @@ function ChooserStep({ onSelect }: { onSelect: (interest: InterestType) => void 
             <button
               key={opt.id}
               type="button"
+              data-meta-event={opt.metaEvent}
+              data-meta-interest={opt.id}
               onClick={() => onSelect(opt.id)}
               className="group w-full flex items-start gap-4 rounded-xl border-2 border-brand-blue/15 bg-white p-5 text-left transition-all hover:border-brand-red hover:shadow-lg active:scale-[0.99] relative overflow-hidden"
             >
@@ -475,6 +481,7 @@ function ChooserStep({ onSelect }: { onSelect: (interest: InterestType) => void 
       <div className="mt-8 text-center border-t border-brand-blue/5 pt-6">
         <a
           href="/"
+          data-meta-event="LearnMoreFromForm"
           onClick={(e) => {
             e.preventDefault();
             navigate('/');
@@ -579,79 +586,77 @@ function InfoStep({ data, errors, update, totalSteps, stepIndex }: StepProps) {
           <FieldError message={errors.email} />
         </div>
 
-        {true && (
-          <div>
-            <label htmlFor="phone" className="mb-1.5 block text-sm font-bold uppercase tracking-wide text-brand-blue">
-              Phone number {data.interest !== 'call' && <span className="text-xs font-normal text-brand-blue/50 lowercase">(optional)</span>}
-            </label>
-            <div className="flex items-stretch gap-2">
-              <div className="relative" ref={countryRef}>
-                <button
-                  type="button"
-                  onClick={() => setCountryOpen((o) => !o)}
-                  aria-haspopup="listbox"
-                  aria-expanded={countryOpen}
-                  aria-label={`Country: ${currentCountry.name}`}
-                  className={`inline-flex h-full items-center gap-1.5 rounded-xl border-2 bg-white px-3 text-base font-bold text-brand-blue transition focus:outline-none focus:ring-2 focus:ring-brand-red/15 ${
-                    errors.phone ? 'border-brand-red' : 'border-brand-blue/15 hover:border-brand-blue/30'
-                  }`}
+        <div>
+          <label htmlFor="phone" className="mb-1.5 block text-sm font-bold uppercase tracking-wide text-brand-blue">
+            Phone number {data.interest !== 'call' && <span className="text-xs font-normal text-brand-blue/50 lowercase">(optional)</span>}
+          </label>
+          <div className="flex items-stretch gap-2">
+            <div className="relative" ref={countryRef}>
+              <button
+                type="button"
+                onClick={() => setCountryOpen((o) => !o)}
+                aria-haspopup="listbox"
+                aria-expanded={countryOpen}
+                aria-label={`Country: ${currentCountry.name}`}
+                className={`inline-flex h-full items-center gap-1.5 rounded-xl border-2 bg-white px-3 text-base font-bold text-brand-blue transition focus:outline-none focus:ring-2 focus:ring-brand-red/15 ${
+                  errors.phone ? 'border-brand-red' : 'border-brand-blue/15 hover:border-brand-blue/30'
+                }`}
+              >
+                +{currentCountry.dialCode}
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${countryOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+              {countryOpen && (
+                <div
+                  role="listbox"
+                  className="absolute left-0 top-[calc(100%+4px)] z-30 max-h-72 w-56 sm:w-72 max-w-[calc(100vw-2.5rem)] overflow-y-auto rounded-xl border-2 border-brand-blue/15 bg-white shadow-xl"
                 >
-                  +{currentCountry.dialCode}
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${countryOpen ? 'rotate-180' : ''}`}
-                  />
-                </button>
-                {countryOpen && (
-                  <div
-                    role="listbox"
-                    className="absolute left-0 top-[calc(100%+4px)] z-30 max-h-72 w-56 sm:w-72 max-w-[calc(100vw-2.5rem)] overflow-y-auto rounded-xl border-2 border-brand-blue/15 bg-white shadow-xl"
-                  >
-                    {COUNTRIES.map((c) => {
-                      const selected = data.phoneCountry === c.code;
-                      return (
-                        <button
-                          key={c.code}
-                          type="button"
-                          role="option"
-                          aria-selected={selected}
-                          onClick={() => {
-                            update({
-                              phoneCountry: c.code,
-                              phone: formatPhone(c.code, data.phone),
-                            });
-                            setCountryOpen(false);
-                          }}
-                          className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors ${
-                            selected
-                              ? 'bg-brand-red/5 font-bold text-brand-red'
-                              : 'text-brand-blue hover:bg-brand-blue/5'
-                          }`}
-                        >
-                          <span className="w-12 shrink-0 font-mono text-xs text-brand-blue/55 tabular-nums">
-                            +{c.dialCode}
-                          </span>
-                          <span>{c.name}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-              <input
-                id="phone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                placeholder={isNANP(data.phoneCountry) ? '(555) 123-4567' : 'Phone number'}
-                value={data.phone}
-                onChange={(e) => update({ phone: formatPhone(data.phoneCountry, e.target.value) })}
-                className={`flex-1 min-w-0 ${inputClasses(!!errors.phone)}`}
-                aria-invalid={!!errors.phone}
-              />
+                  {COUNTRIES.map((c) => {
+                    const selected = data.phoneCountry === c.code;
+                    return (
+                      <button
+                        key={c.code}
+                        type="button"
+                        role="option"
+                        aria-selected={selected}
+                        onClick={() => {
+                          update({
+                            phoneCountry: c.code,
+                            phone: formatPhone(c.code, data.phone),
+                          });
+                          setCountryOpen(false);
+                        }}
+                        className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors ${
+                          selected
+                            ? 'bg-brand-red/5 font-bold text-brand-red'
+                            : 'text-brand-blue hover:bg-brand-blue/5'
+                        }`}
+                      >
+                        <span className="w-12 shrink-0 font-mono text-xs text-brand-blue/55 tabular-nums">
+                          +{c.dialCode}
+                        </span>
+                        <span>{c.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-            <FieldError message={errors.phone} />
+            <input
+              id="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder={isNANP(data.phoneCountry) ? '(555) 123-4567' : 'Phone number'}
+              value={data.phone}
+              onChange={(e) => update({ phone: formatPhone(data.phoneCountry, e.target.value) })}
+              className={`flex-1 min-w-0 ${inputClasses(!!errors.phone)}`}
+              aria-invalid={!!errors.phone}
+            />
           </div>
-        )}
+          <FieldError message={errors.phone} />
+        </div>
       </div>
     </div>
   );
@@ -892,6 +897,8 @@ export function InvestForm() {
       page_location: window.location.href,
     });
     (window as any).fbq?.('track', 'PageView');
+    // Form opened: top of the lead funnel.
+    trackMeta('InitiateCheckout');
   }, []);
 
   useEffect(() => {
@@ -978,6 +985,19 @@ export function InvestForm() {
       }
 
       await submitLead(payload);
+
+      // Meta conversion. Fire here (on successful submit) rather than on the
+      // thank-you page so a refresh of /thank-you can't double-count it.
+      const rawAmount =
+        data.investmentLevel === 'other' ? data.investmentOther : data.investmentLevel;
+      const leadValue = Number(String(rawAmount).replace(/[^0-9.]/g, '')) || 0;
+      trackMeta('Lead', {
+        content_name: 'Invest Inquiry',
+        value: leadValue,
+        currency: 'USD',
+        accredited: data.accredited || 'unknown',
+        interest: data.interest || 'unknown',
+      });
       
       sessionStorage.setItem(
         'hrp_lead',
@@ -1135,7 +1155,7 @@ export function InvestForm() {
                         }
                       }}
                       disabled={submitting}
-                      className="flex items-center justify-center gap-1.5 rounded-xl border-2 border-brand-blue/20 px-5 py-3.5 text-sm font-bold uppercase tracking-wider text-brand-blue transition-colors hover:bg-brand-blue/5 disabled:opacity-50"
+                      className="flex items-center justify-center gap-1.5 rounded-xl border-2 border-brand-blue/20 px-5 py-3.5 text-sm font-bold uppercase tracking-wider text-brand-blue transition hover:bg-brand-blue/5 hover:text-brand-blue/80 active:scale-[0.98] disabled:opacity-50"
                     >
                       <ArrowLeft className="h-4 w-4" />
                       Back
@@ -1143,32 +1163,39 @@ export function InvestForm() {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-red px-6 py-3.5 text-base font-display uppercase tracking-wider text-white shadow-lg transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-red px-6 py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-md transition hover:bg-red-700 active:scale-[0.99] disabled:opacity-50"
                     >
-                      {step === TOTAL_STEPS ? (
-                        submitting ? (
-                          <>
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                            Submitting…
-                          </>
-                        ) : (
-                          'Submit'
-                        )
+                      {submitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : step === TOTAL_STEPS ? (
+                        <>
+                          Submit Details
+                          <Check className="h-4 w-4" strokeWidth={3} />
+                        </>
                       ) : (
-                        'Continue'
+                        <>
+                          Next Step
+                          <ArrowRight className="h-4 w-4" strokeWidth={3} />
+                        </>
                       )}
-                      {step < TOTAL_STEPS && <ArrowRight className="h-5 w-5" />}
                     </button>
                   </div>
                 )}
               </motion.div>
             </AnimatePresence>
           </form>
-          <p className="mx-auto mt-6 max-w-lg text-center text-[11px] leading-relaxed text-white/45">
-            {DISCLAIMER}
-          </p>
         </div>
       </main>
+
+      {/* Disclaimer */}
+      <footer className="shrink-0 bg-brand-blue border-t border-white/5 py-6">
+        <div className="mx-auto w-full max-w-xl px-5 text-center">
+          <p className="text-[10px] leading-relaxed text-white/40 font-sans">{DISCLAIMER}</p>
+        </div>
+      </footer>
     </div>
   );
 }
