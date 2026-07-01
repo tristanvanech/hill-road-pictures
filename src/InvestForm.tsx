@@ -1051,17 +1051,15 @@ export function InvestForm() {
       <header className="shrink-0 border-b border-white/10">
         <div className="mx-auto flex w-full max-w-xl items-center justify-between px-5 py-4">
           <a
-            href="/"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate('/');
-            }}
+            href="https://hillroadpictures.com"
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label="Hill Road Pictures home"
           >
             <img
               src="/Hill Road Pictures Wordmark white transparent.png"
               alt="Hill Road Pictures"
-              className="h-9 w-auto opacity-90"
+              className="h-9 w-auto opacity-90 hover:opacity-100 transition-opacity"
               referrerPolicy="no-referrer"
             />
           </a>

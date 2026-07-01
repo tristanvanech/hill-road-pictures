@@ -68,7 +68,7 @@ const Header = () => (
     <div className="max-w-[1536px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 flex flex-col gap-2">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4 md:gap-8">
-          <a href="/" className="block">
+          <a href="https://hillroadpictures.com" target="_blank" rel="noopener noreferrer" className="block">
             <img 
               src="/Hill Road Pictures Wordmark white transparent.png" 
               alt="Hill Road Pictures" 

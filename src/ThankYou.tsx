@@ -126,12 +126,14 @@ export function ThankYou() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-lg"
       >
-        <img
-          src="/Hill Road Pictures Wordmark white transparent.png"
-          alt="Hill Road Pictures"
-          className="h-12 w-auto mx-auto mb-10 opacity-90"
-          referrerPolicy="no-referrer"
-        />
+        <a href="https://hillroadpictures.com" target="_blank" rel="noopener noreferrer" className="block mb-10">
+          <img
+            src="/Hill Road Pictures Wordmark white transparent.png"
+            alt="Hill Road Pictures"
+            className="h-12 w-auto mx-auto opacity-90 hover:opacity-100 transition-opacity"
+            referrerPolicy="no-referrer"
+          />
+        </a>
 
         <motion.div
           initial={{ scale: 0 }}
