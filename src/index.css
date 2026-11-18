@@ -76,6 +76,28 @@
   background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
 }
 
+.progress-segment-striped {
+  background-color: rgba(11, 31, 59, 0.08);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(11, 31, 59, 0.14),
+    rgba(11, 31, 59, 0.14) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
+.progress-segment-striped-fill {
+  background-color: #0B1F3B;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.18) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -194,4 +216,25 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Explicit WebKit override to prevent date input elements from overflowing on mobile iOS Safari */
+input[type="date"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+  display: block !important;
+  text-align: left !important;
+  min-height: 1.5em !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
 }

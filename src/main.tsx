@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import {InvestForm} from './InvestForm.tsx';
 import {ThankYou} from './ThankYou.tsx';
+import {PrivacyPolicy} from './PrivacyPolicy.tsx';
 import {captureUtmParams, useRoute} from './router';
 import {initMetaClickTracking} from './meta';
 import './index.css';
@@ -17,6 +18,7 @@ function Root() {
   const path = useRoute();
   if (path === '/invest') return <InvestForm />;
   if (path === '/thank-you') return <ThankYou />;
+  if (path === '/privacy' || path === '/privacy-policy') return <PrivacyPolicy />;
   return <App />;
 }
 

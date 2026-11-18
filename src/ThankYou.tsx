@@ -19,7 +19,6 @@ export function ThankYou() {
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [interest, setInterest] = useState<'documents' | 'webinar' | 'call' | ''>('');
-  const [webinarSession, setWebinarSession] = useState('');
   const [callbackDate, setCallbackDate] = useState('');
   const [callbackTime, setCallbackTime] = useState('');
   const [timeZone, setTimeZone] = useState('');
@@ -34,7 +33,6 @@ export function ThankYou() {
           firstName?: string;
           email?: string;
           interest?: 'documents' | 'webinar' | 'call';
-          webinarSession?: string;
           callbackDate?: string;
           callbackTime?: string;
           timeZone?: string;
@@ -42,7 +40,6 @@ export function ThankYou() {
         if (parsed.firstName) setFirstName(parsed.firstName);
         if (parsed.email) setEmail(parsed.email);
         if (parsed.interest) setInterest(parsed.interest);
-        if (parsed.webinarSession) setWebinarSession(parsed.webinarSession);
         if (parsed.callbackDate) setCallbackDate(parsed.callbackDate);
         if (parsed.callbackTime) setCallbackTime(parsed.callbackTime);
         if (parsed.timeZone) setTimeZone(parsed.timeZone);
@@ -102,11 +99,11 @@ export function ThankYou() {
 
   if (interest === 'documents') {
     thankYouTitle = 'Documents Requested!';
-    thankYouMessage = `Thanks, ${firstName || 'there'} — the offering documents are on their way to ${email || 'your email'}.`;
-    personalizedMessage = `Bob Vanech, our Executive Producer, will personally follow up to ensure you got the packet and to answer any initial structure questions.`;
+    thankYouMessage = `Thanks, ${firstName || 'there'} — your request has been received.`;
+    personalizedMessage = `Our Investor Relations team will be in touch with you shortly.`;
   } else if (interest === 'webinar') {
     thankYouTitle = "You're Registered!";
-    thankYouMessage = `You're registered for the webinar: ${webinarSession || 'live session'}. We'll email your link shortly.`;
+    thankYouMessage = `You're registered for our live webinar. We'll email your link shortly.`;
     personalizedMessage = `Bob Vanech, our Executive Producer, will be personally reaching out with a meeting link and direct webinar instructions.`;
   } else if (interest === 'call') {
     thankYouTitle = 'Call Scheduled!';

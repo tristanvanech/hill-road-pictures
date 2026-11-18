@@ -1,10 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { navigate } from './router';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { navigate } from './router';
+import * as pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs';
+
+// Ensure PDF.js worker message handler is globally available so fake worker fallback never fails CORS in iframes or sandboxed environments
+if (typeof window !== 'undefined') {
+  (window as any).pdfjsWorker = pdfjsWorker;
+  (globalThis as any).pdfjsWorker = pdfjsWorker;
+}
 
 // Set up the PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+try {
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.mjs',
+    import.meta.url,
+  ).toString();
+} catch {
+  // Fallback to local worker script
+}
 
 import {
   Play,
@@ -22,6 +36,14 @@ import {
   Check,
   X
 } from 'lucide-react';
+
+import frankImg from './assets/frank.png';
+import bobImg from './assets/bob.png';
+import chadImg from './assets/chad.jpeg';
+import kimImg from './assets/kim.jpeg';
+import karaImg from './assets/kara-headshot.png';
+import cooperImg from './assets/cooper-headshot.png';
+import { ZOOM_WEBINAR_URL } from './InvestForm';
 
 // --- Components ---
 
@@ -64,11 +86,40 @@ const VideoModal = ({ isOpen, onClose, videoId }: { isOpen: boolean; onClose: ()
 };
 
 const Header = () => (
-  <header className="fixed top-0 left-0 w-full z-50 py-2 md:py-3 bg-brand-blue shadow-xl border-b border-brand-gold/20">
-    <div className="max-w-[1536px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 flex flex-col gap-2">
+  <header className="fixed top-0 left-0 w-full z-50 bg-brand-blue shadow-xl border-b border-brand-gold/20">
+    {/* Webinar Announcement Banner - Compact & low real estate on mobile */}
+    <div className="bg-amber-400 text-slate-950 py-1 sm:py-1.5 px-3 sm:px-6 md:px-8 border-b border-amber-500 shadow-sm relative z-10">
+      <div className="max-w-[1536px] mx-auto flex items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1 overflow-hidden">
+          <span className="font-extrabold tracking-wider uppercase text-[9px] sm:text-[11px] bg-slate-950 text-amber-300 px-1.5 sm:px-2 py-0.5 rounded shadow-sm shrink-0">
+            Webinar
+          </span>
+          <p className="text-slate-950 font-bold sm:font-black text-[11px] sm:text-sm tracking-tight truncate">
+            <span className="sm:hidden">Tue, Sep 22 &bull; 7 PM ET</span>
+            <span className="hidden sm:inline">Tuesday, September 22 at 7:00 PM ET / 4:00 PM PT</span>
+          </p>
+          <span className="hidden xl:inline text-slate-900/80 font-medium text-xs border-l border-slate-950/20 pl-3 truncate">
+            Hear from writer Frank Peluso &amp; EP Bob Vanech on casting, tax incentives, and CASH terms
+          </span>
+        </div>
+
+        <a
+          href={ZOOM_WEBINAR_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-meta-event="ChooseWebinar"
+          className="inline-flex items-center justify-center gap-1 bg-brand-red text-white hover:bg-red-700 transition-all px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded font-black text-[10px] sm:text-xs shadow uppercase tracking-wider whitespace-nowrap shrink-0 hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <span>Register</span>
+          <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+        </a>
+      </div>
+    </div>
+
+    <div className="max-w-[1536px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 py-2 md:py-3 flex flex-col gap-2">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4 md:gap-8">
-          <a href="/" className="block">
+          <a href="https://hillroadpictures.com" target="_blank" rel="noopener noreferrer" className="block">
             <img 
               src="/Hill Road Pictures Wordmark white transparent.png" 
               alt="Hill Road Pictures" 
@@ -89,7 +140,7 @@ const Header = () => (
           <a href="/" className="block">
             <img 
               src="/SITCO Primary Wordmark single line white transparent v2.png" 
-              alt="SITCO" 
+              alt="So, I'm the Crazy One?" 
               className="h-5 md:h-10 w-auto hover:opacity-80 transition-opacity"
               referrerPolicy="no-referrer"
             />
@@ -112,7 +163,7 @@ const Header = () => (
 
 const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
   return (
-    <div className="relative min-h-[80vh] w-full flex flex-col justify-center pt-16 md:pt-20 pb-8 overflow-hidden">
+    <div className="relative min-h-screen w-full flex flex-col justify-start md:justify-center pt-32 sm:pt-36 md:pt-44 pb-12 overflow-hidden">
       <div className="max-w-[1536px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 w-full relative z-10">
         <div className="grid lg:grid-cols-12 gap-16 lg:gap-8 xl:gap-16 items-center mb-16">
           
@@ -123,35 +174,41 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
             transition={{ duration: 0.8 }}
             className="text-left lg:col-span-12 xl:col-span-5"
           >
-            <div className="flex flex-wrap items-center gap-3 mb-4">
-              <span className="bg-brand-red text-white text-xs md:text-sm font-black px-4 py-1.5 uppercase tracking-widest leading-none shadow-sm rounded">Reg D Accredited Investor Offering</span>
+            <div className="flex items-center gap-3 mb-3 sm:mb-4">
+              <span className="inline-flex items-center bg-brand-red text-white text-[11px] sm:text-xs md:text-sm font-black px-3 sm:px-4 py-1.5 uppercase tracking-wider sm:tracking-widest leading-none shadow-sm rounded whitespace-nowrap">
+                Reg D Accredited Investor Offering
+              </span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-sans font-black text-brand-red uppercase tracking-tighter mb-4 leading-[1.1]">
-              INVEST IN <span className="text-brand-blue">"SO, <span className="italic">I'M</span> THE CRAZY ONE?"</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-sans font-black text-brand-red uppercase tracking-tight mb-4 leading-[1.1]">
+              INVEST IN <span className="text-brand-blue">"SO, <span className="italic tracking-wide">I'M</span> THE CRAZY ONE?"</span>
             </h1>
-            <div className="text-left text-sm md:text-base text-gray-700 leading-relaxed mb-6 max-w-2xl space-y-3 font-sans">
-              <p className="font-sans text-sm md:text-base text-gray-800 leading-relaxed font-normal">
-                Get your front-row seat to the new era of creator-led cinema. Join us in producing the funniest R-rated comedy of the decade — with an ensemble cast of internet stars and mainstream actors commanding 200M+ followers, locking in a passionate fanbase before the camera rolls.
+            <div className="text-left text-base md:text-lg text-gray-700 leading-relaxed mb-6 max-w-2xl space-y-4 font-sans">
+              <p className="font-sans text-base md:text-lg text-gray-800 leading-relaxed font-normal">
+                Get your front-row seat to the new era of <strong className="font-extrabold text-brand-blue">creator-led cinema</strong>. Join us in producing the funniest R-rated comedy of the decade — with an ensemble cast of internet stars and mainstream actors commanding <strong className="font-extrabold text-brand-blue">200M+ followers</strong>, locking in a passionate fanbase before the camera rolls.
               </p>
-              <p className="font-mono text-xs text-slate-700 bg-slate-100 border-l-2 border-brand-red px-3 py-2.5 rounded-r leading-relaxed">
-                <strong className="font-bold text-gray-900 font-mono">The Pitch:</strong> After Dutch and his buddies get caught cheating, he breaks into a couples therapist's office to pose as a counselor to try and save their skins. He accidentally builds the hottest practice in town — until their girlfriends find out.
-              </p>
-              <p className="font-serif italic text-gray-600 text-xs md:text-sm">
-                Early investors are eligible for downside protection via a first lien on GA tax credits, plus uncapped upside through our pioneering ownership model.
+              <p className="font-serif italic text-gray-600 text-sm md:text-base">
+                Early investors will get a 10% discount relative to the Reg CF, plus uncapped upside through our pioneering ownership model.
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row items-center gap-4 mb-6 md:mb-12">
               <a 
-                href="/invest"
-                onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
+                href="/invest" 
+                data-meta-event="ClickInvest"
+                data-meta-location="hero"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/invest');
+                }}
                 className="w-full sm:w-auto bg-brand-red text-white px-6 md:px-8 py-3 md:py-4 text-lg md:text-xl font-display uppercase tracking-wider hover:bg-red-700 transition-colors flex items-center justify-center gap-2 group shadow-lg"
               >
-                Invest Now
+                Learn More
                 <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
               </a>
               <button 
                 onClick={() => onWatchVideo('0rtorNlIbyk')}
+                data-meta-event="WatchTrailer"
+                data-meta-location="hero"
                 className="w-full sm:w-auto bg-white text-brand-blue border-2 border-brand-blue px-6 md:px-8 py-3 md:py-4 text-lg md:text-xl font-display uppercase tracking-wider hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center gap-2 group shadow-lg"
               >
                 Watch Trailer
@@ -165,11 +222,11 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative lg:col-span-7 lg:-mt-12"
+            className="relative lg:col-span-7 mt-2 md:mt-4 lg:mt-16"
             id="filmmakers"
           >
             {/* Scribble Label */}
-            <div className="absolute -top-10 md:-top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0 z-20 pointer-events-none rotate-[-2deg]">
+            <div className="absolute -top-10 md:-top-13 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0 z-20 pointer-events-none rotate-[-2deg]">
               <span className="scribble text-brand-blue text-xl md:text-3xl whitespace-nowrap">Meet the filmmakers</span>
               <svg className="w-6 h-8 md:w-8 md:h-10 text-brand-red -mt-0.5" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16 4 Q 26 18, 18 36" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
@@ -177,7 +234,7 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
               </svg>
             </div>
 
-            <div className="relative rounded-lg overflow-hidden border-8 border-white shadow-2xl rotate-1 bg-black aspect-video">
+            <div className="relative rounded-lg overflow-hidden border-8 border-white shadow-2xl rotate-1 bg-black aspect-video max-w-lg lg:max-w-xl mx-auto">
               <iframe
                 src="https://www.youtube.com/embed/OcWFe1GnEP8"
                 title="Meet the filmmakers"
@@ -185,6 +242,17 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
+            </div>
+
+            {/* Styled Pitch Callout under the video */}
+            <div className="mt-4 md:mt-6 mb-6 md:mb-12 relative bg-amber-50/70 border-l-4 border-brand-red p-5 rounded-r-xl shadow-md">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-sans font-black text-brand-red uppercase tracking-wider text-xs">THE PITCH</span>
+                <span className="w-2 h-2 rounded-full bg-brand-gold animate-pulse"></span>
+              </div>
+              <p className="font-sans text-xs sm:text-sm text-gray-800 leading-relaxed italic font-normal">
+                After Dutch and his buddies get caught cheating, he breaks into a couples therapist&apos;s office and poses as a counselor to try and save their skins. He accidentally builds the hottest practice in town &mdash; until their girlfriends find out.
+              </p>
             </div>
           </motion.div>
         </div>
@@ -199,6 +267,8 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
           {/* Trailer Thumbnail */}
           <button 
             onClick={() => onWatchVideo('0rtorNlIbyk')}
+            data-meta-event="WatchTrailer"
+            data-meta-location="poster"
             className="relative group block z-10 hover:z-50 md:rotate-3 text-left w-full"
           >
             <div className="absolute -top-10 md:-top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0 z-20 pointer-events-none rotate-[-2deg]">
@@ -221,6 +291,8 @@ const Hero = ({ onWatchVideo }: { onWatchVideo: (id: string) => void }) => {
           {/* Founder Thumbnail */}
           <button 
             onClick={() => onWatchVideo('v2HNpdwWyls')}
+            data-meta-event="WatchVideo"
+            data-meta-content-name="Writer Interview"
             className="relative group block z-20 hover:z-50 md:-rotate-2 mt-8 md:mt-0 text-left w-full"
           >
             <div className="absolute -top-10 md:-top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0 z-20 pointer-events-none rotate-[1deg]">
@@ -346,7 +418,7 @@ const MarketLandscape = () => (
           ))}
         </div>
         <div className="mt-8 text-center text-[10px] text-gray-400 uppercase tracking-widest">
-          Source: Box Office Mojo, SITCO R-Rated Comedy Analysis (March 2026). Includes Domestic, Foreign, and Home Video.
+          Source: Box Office Mojo, "So, I'm the Crazy One?" R-Rated Comedy Analysis (March 2026). Includes Domestic, Foreign, and Home Video.
         </div>
       </div>
     </div>
@@ -356,19 +428,32 @@ const MarketLandscape = () => (
 const TheStory = ({ onWatchTrailer, onWatchFrank }: { onWatchTrailer: () => void; onWatchFrank: () => void }) => (
   <section id="story" className="py-24 bg-brand-blue text-white relative z-20 border-b border-brand-gold/20">
     <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
+      <div className="flex justify-center mb-6" id="story-logo-container">
+        <img 
+          src="/sitco-lawn-chair.jpg" 
+          alt="Lawn Chair" 
+          className="w-16 h-16 md:w-20 md:h-20 rounded-2xl border-2 border-brand-gold p-1 bg-brand-blue/40 shadow-2xl object-cover hover:scale-105 transition-transform duration-300"
+          id="story-logo"
+        />
+      </div>
       <h2 className="text-6xl md:text-8xl font-display text-brand-gold mb-8 text-center">THE STORY</h2>
       <p className="text-center text-xl md:text-2xl font-display text-white mb-8 uppercase tracking-widest">A <span className="italic">crazy</span> funny script that will <span className="text-brand-red">offend everyone</span></p>
       
-      <p className="text-base md:text-lg text-gray-200 leading-relaxed font-sans px-6 md:px-0 max-w-4xl mx-auto text-center mb-16">
-        <strong className="text-brand-gold font-black tracking-wider uppercase">Meet Dutch Swithin:</strong> He does more than just tell women they're crazy when their boyfriend is obviously fooling around. He's here to speak his mind and say every taboo about you he can think of — no matter your race, color, or creed. But as his unfiltered insult-spewing inadvertently turns into decent advice, he's forced to prescribe himself a strong dose of self-reflection to make things right with his ex-wife before she moves across the world.
-      </p>
+      <div className="max-w-4xl mx-auto text-center mb-16">
+        <p className="text-base md:text-lg text-gray-200 leading-relaxed font-sans">
+          <strong className="text-brand-gold font-black tracking-wider uppercase">Meet Dutch Swithin:</strong> He does more than just tell women they're crazy when their boyfriend is obviously fooling around. He's here to speak his mind and say every taboo about you he can think of — no matter your race, color, or creed. But as his unfiltered insult-spewing inadvertently turns into decent advice, he's forced to prescribe himself a strong dose of self-reflection to make things right with his ex-wife before she moves across the world.
+        </p>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-12">
         {/* Frank Video */}
         <div className="space-y-6">
           <button 
             onClick={onWatchFrank}
-            className="w-full relative aspect-video bg-black rounded-lg border-8 border-white shadow-2xl overflow-hidden group"
+            data-meta-event="WatchVideo"
+            data-meta-content-name="Writer Interview"
+            data-meta-location="story"
+            className="w-full relative aspect-video bg-black rounded-lg border-8 border-white shadow-2xl overflow-hidden group text-left"
           >
             <img src="/Frank The Writer Video Thumbnail.png" className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" alt="Frank" />
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
@@ -387,7 +472,9 @@ const TheStory = ({ onWatchTrailer, onWatchFrank }: { onWatchTrailer: () => void
         <div className="space-y-6">
           <button 
             onClick={onWatchTrailer}
-            className="w-full relative aspect-video bg-black rounded-lg border-8 border-white shadow-2xl overflow-hidden group"
+            data-meta-event="WatchTrailer"
+            data-meta-location="story"
+            className="w-full relative aspect-video bg-black rounded-lg border-8 border-white shadow-2xl overflow-hidden group text-left"
           >
             <img src="/poster-horizontal.png" className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" alt="Trailer" />
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
@@ -418,7 +505,7 @@ const TheOffering = () => (
         <div>
           <h3 className="text-3xl font-display text-brand-red mb-6 uppercase tracking-tight">The CASH Instrument</h3>
           <p className="text-lg text-text-muted mb-8 leading-relaxed">
-            Inspired by Silicon Valley's "SAFE" agreements, our CASH instrument is a pioneering security designed specifically for film. It prioritizes investor protection while maximizing participation in the film's global success.
+            Inspired by Silicon Valley's "SAFE" agreements, our CASH instrument is a pioneering security designed specifically for film. It prioritizes investor-friendly terms while maximizing participation in the film's global success.
           </p>
           <div className="grid gap-4">
             <div className="bg-white p-6 rounded-xl border border-brand-blue/10 shadow-sm flex gap-4">
@@ -426,8 +513,8 @@ const TheOffering = () => (
                 <ShieldCheck className="w-6 h-6 text-brand-red" />
               </div>
               <div>
-                <h4 className="font-black text-brand-blue uppercase tracking-widest text-sm mb-1">Downside Protection</h4>
-                <p className="text-sm text-text-muted">Early investors hold a first lien on expected Georgia Tax Credits (up to 30% of the production budget, based on availability).</p>
+                <h4 className="font-black text-brand-blue uppercase tracking-widest text-sm mb-1">State &amp; Local Tax Credits</h4>
+                <p className="text-sm text-text-muted">Early investors benefit from state and local production incentives, including up to 40% in expected tax credits (30% Georgia State + 10% Savannah Film Commission coverage, subject to availability).</p>
               </div>
             </div>
             <div className="bg-white p-6 rounded-xl border border-brand-blue/10 shadow-sm flex gap-4">
@@ -466,7 +553,7 @@ const TheOffering = () => (
             <div className="flex items-center gap-6">
               <div className="w-20 h-20 rounded-full border-4 border-brand-gold flex items-center justify-center text-2xl font-black text-brand-gold shrink-0 bg-brand-gold/5">33%</div>
               <div>
-                <h4 className="font-display text-brand-gold uppercase tracking-wider">The Cast</h4>
+                <h4 className="font-display text-brand-gold uppercase tracking-wider">Cast</h4>
                 <p className="text-xs text-white/60 uppercase tracking-widest">The Built-in Audience</p>
               </div>
             </div>
@@ -515,8 +602,14 @@ const TheOffering = () => (
               <div>
                 <div className="mt-4">
                   <a 
-                    href="/invest"
-                    onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
+                    href="/invest?amount=5000" 
+                    data-meta-event="ClickInvest"
+                    data-meta-location="tier-5000"
+                    data-meta-value="5000"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/invest?amount=5000');
+                    }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-[#e7d8b4] hover:bg-[#ebdcb4] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
                     Reserve your spot
@@ -546,7 +639,7 @@ const TheOffering = () => (
               <div>
                 <p className="font-sans uppercase tracking-[0.08em] text-sm font-black text-[#6f9fd8] mb-4">Core Participation &amp; Screening Access</p>
                 
-                <div className="flex items-center gap-2.5 font-normal text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-xs italic mb-4">
+                <div className="flex items-center gap-2.5 font-normal text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-sm italic mb-4">
                   <span>Everything in Opening Scene, plus:</span>
                 </div>
  
@@ -562,8 +655,14 @@ const TheOffering = () => (
               <div>
                 <div className="mt-4">
                   <a 
-                    href="/invest"
-                    onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
+                    href="/invest?amount=10000" 
+                    data-meta-event="ClickInvest"
+                    data-meta-location="tier-10000"
+                    data-meta-value="10000"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/invest?amount=10000');
+                    }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-[#6f9fd8] hover:bg-[#7fafe8] text-[#0B1F3B] hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
                     Reserve your spot
@@ -593,7 +692,7 @@ const TheOffering = () => (
               <div>
                 <p className="font-sans uppercase tracking-[0.08em] text-sm font-black text-brand-red mb-4">Premium Access</p>
                 
-                <div className="flex items-center gap-2.5 font-normal text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-xs italic mb-4">
+                <div className="flex items-center gap-2.5 font-normal text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-sm italic mb-4">
                   <span>Everything in Spotlight, plus:</span>
                 </div>
  
@@ -614,13 +713,19 @@ const TheOffering = () => (
               </div>
               <div>
                 <div className="bg-brand-red/10 border-l-4 border-brand-red p-3.5 rounded-r-xl my-4 text-left">
-                  <div className="font-display text-sm tracking-wider text-brand-red uppercase font-bold">Associate Producer Credit</div>
+                  <div className="font-sans text-base tracking-wider text-brand-red uppercase font-extrabold leading-snug">Associate Producer Credit</div>
                   <div className="text-[10px] text-white/65 mt-0.5">Reg D 506(c) Investor Recognition</div>
                 </div>
                 <div className="mt-4">
                   <a 
-                    href="/invest"
-                    onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
+                    href="/invest?amount=30000" 
+                    data-meta-event="ClickInvest"
+                    data-meta-location="tier-30000"
+                    data-meta-value="30000"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/invest?amount=30000');
+                    }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-brand-red hover:bg-red-700 text-white hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-lg"
                   >
                     Become a Producer
@@ -650,7 +755,7 @@ const TheOffering = () => (
               <div>
                 <p className="font-sans uppercase tracking-[0.08em] text-sm font-black text-brand-gold mb-4">Highest Recognition &amp; Access</p>
                 
-                <div className="flex items-center gap-2.5 font-normal text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-xs italic mb-4">
+                <div className="flex items-center gap-2.5 font-normal text-white bg-white/10 px-3 py-2 rounded-xl border border-white/10 text-sm italic mb-4">
                   <span>Everything in Marquee, plus:</span>
                 </div>
  
@@ -671,13 +776,19 @@ const TheOffering = () => (
               </div>
               <div>
                 <div className="bg-brand-gold/10 border-l-4 border-brand-gold p-3.5 rounded-r-xl my-4 text-left">
-                  <div className="font-display text-sm tracking-wider text-brand-gold uppercase font-bold">Executive Producer Credit</div>
+                  <div className="font-sans text-base tracking-wider text-brand-gold uppercase font-extrabold leading-snug">Executive Producer Credit</div>
                   <div className="text-[10px] text-white/65 mt-0.5">Reg D 506(c) Investor Recognition</div>
                 </div>
                 <div className="mt-4">
                   <a 
-                    href="/invest"
-                    onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
+                    href="/invest?amount=100000" 
+                    data-meta-event="ClickInvest"
+                    data-meta-location="tier-100000"
+                    data-meta-value="100000"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/invest?amount=100000');
+                    }}
                     className="w-full py-3.5 px-4 text-center text-sm font-sans uppercase tracking-wider bg-brand-gold hover:bg-brand-gold/80 text-black hover:scale-[1.02] active:scale-[0.98] transition-all font-extrabold rounded-xl block shadow-md"
                   >
                     Become a Producer
@@ -692,7 +803,7 @@ const TheOffering = () => (
         <div className="mt-12 p-6 rounded-2xl border border-[#C8A24A]/20 bg-[#0B1F3B] hover:border-[#C8A24A]/30 transition-all text-sm leading-relaxed max-w-4xl mx-auto shadow-md">
           <p className="text-white/90">
             <strong className="text-brand-gold font-bold mr-1.5 tracking-wider uppercase text-xs">Member Unit Economics — Included for Every Tier:</strong>
-            Repayment of invested capital; 20% preferred return; 10% discounted Membership Units in the next qualified Reg CF offering; priority access to designated incentive proceeds subject to availability and prior allocations; upside participation; pro rata rights; priority / first-priority allocation rights if limited; MFN economic terms protection.
+            Repayment of invested capital; 20% preferred return; 10% discounted Membership Units in the next qualified Reg CF offering; priority access to designated incentive proceeds subject to availability and prior allocations; upside participation; pro rata rights; priority / first-priority allocation rights if limited; MFN economic terms.
           </p>
         </div>
 
@@ -746,7 +857,7 @@ const TheDeck = () => {
             <div ref={containerRef} className="w-full bg-gray-100 p-2 md:p-8 min-h-[250px] md:min-h-[400px] relative group flex justify-center items-center">
               <div className="relative shadow-2xl">
                 <Document
-                  file="/4 10 26 Movie Investor Deck - Shareable.pdf"
+                  file="/deck.pdf"
                   onLoadSuccess={onDocumentLoadSuccess}
                   loading={
                     <div className="flex flex-col items-center justify-center h-64 w-full min-w-[280px] md:min-w-[600px] bg-gray-50 rounded-lg">
@@ -810,8 +921,10 @@ const TheDeck = () => {
 
               <div className="flex items-center gap-3">
                 <a 
-                  href="/4 10 26 Movie Investor Deck - Shareable.pdf" 
+                  href="/August 2026 Movie Investor Deck - Shareable.pdf" 
                   download
+                  data-meta-event="ViewContent"
+                  data-meta-content-name="Investor Deck"
                   className="flex items-center gap-2 bg-brand-red text-white px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-red-700 transition-colors shadow-sm"
                 >
                   <FileText className="w-4 h-4" />
@@ -833,26 +946,62 @@ const TheTeam = () => {
     {
       name: "Frank Peluso",
       title: "Writer / Director",
-      image: "/Frank Peluso Jr IMDb.png",
-      bio: "Frank is a filmmaker who has written and directed over 160 commercials and a dozen documentaries. Coming out of the ICM agent trainee program, Frank trained in Hollywood for 20 years under writer/directors David Ayer (Training Day) and Nick Cassavetes (The Other Woman). Frank and Nick made several films together including The Notebook, My Sister's Keeper, God Is a Bullet, and Alpha Dog, which Frank produced. Cassavetes then produced Frank's feature film debut as director (Red Handed, starring Michael Madsen) in 2019. Recently, Frank wrote and produced the feature documentary Sandy Powell: Dressing the Part, featuring Academy Award winners Julianne Moore and Cate Blanchett. The film won best documentary at the Burbank Film Festival in September 2025. Frank studied film directing at UCLA. He received a BA in English from Pepperdine University. He lives in Savannah, Georgia, with his wife and three children."
+      image: frankImg,
+      bio: (
+        <span>
+          Frank is a filmmaker who has written and directed over 160 commercials and a dozen documentaries. Coming out of the ICM agent trainee program, Frank trained in Hollywood for 20 years under writer/directors David Ayer (Training Day) and Nick Cassavetes (The Other Woman). Frank and Nick made several films together including The Notebook, My Sister's Keeper, God Is a Bullet, and Alpha Dog, which Frank produced. Cassavetes then produced Frank's feature film debut as director (Red Handed, starring Michael Madsen) in 2019. Recently, Frank wrote and produced the feature documentary Sandy Powell: Dressing the Part, featuring Academy Award winners Julianne Moore and Cate Blanchett. The film won best documentary at the Burbank Film Festival in September 2025. Frank studied film directing at UCLA. He received a BA in English from Pepperdine University. He lives in Savannah, Georgia, with his wife and three children.
+        </span>
+      )
     },
     {
       name: "Bob Vanech",
-      title: "Executive Producer",
-      image: "/Screenshot 2026-04-02 at 12.09.30 AM.png",
-      bio: "Bob Vanech is an entrepreneur and executive producer with extensive experience in equity crowdfunding, venture capital, and scaling digital media companies. He was the founding CFO and Chairman of Zealot Networks, where he led more than $100 million in fundraising and helped build one of the early multi-platform digital media aggregators. He later served as founding CFO and Head of Revenue at Trebel Music, driving capital formation, strategic partnerships, and revenue growth for the global music platform. Across his career, Bob has structured and executed complex financing strategies and growth initiatives, bringing disciplined financial leadership and deep media operating experience to So I’m the Crazy One as it advances its equity crowdfunding campaign and broader market strategy."
+      title: "Producer",
+      image: bobImg,
+      bio: (
+        <span>
+          Bob Vanech is an entrepreneur and executive producer with extensive experience in equity crowdfunding, venture capital, and scaling digital media companies. He was the founding CFO and Chairman of Zealot Networks, where he led more than $100 million in fundraising and helped build one of the early multi-platform digital media aggregators. He later served as founding CFO and Head of Revenue at Trebel Music, driving capital formation, strategic partnerships, and revenue growth for the global music platform. Across his career, Bob has structured and executed complex financing strategies and growth initiatives, bringing disciplined financial leadership and deep media operating experience to &ldquo;So, <span className="italic tracking-wide">I&rsquo;m</span> the Crazy One?&rdquo; as it advances its equity crowdfunding campaign and broader market strategy.
+        </span>
+      )
     },
     {
       name: "Chad Seymour",
       title: "Chief Marketing Officer",
-      image: "/Chad headshot (1).jpeg",
-      bio: "Chad Seymour brings more than two decades of brand, media, and audience-building experience to So I’m the Crazy One, helping shape the film’s positioning, partnerships, and crowdfund strategy. A seasoned marketing executive and agency founder, Chad has led integrated campaigns for global brands and high-growth ventures across entertainment, consumer goods, and digital media. He previously served as Chief Marketing Officer of Zealot Networks and co-founded Wide Open Spaces, advising companies and creators on how to define and own differentiated market space. Earlier in his career, he held leadership roles at Neighbor Agency, TBWA\\Chiat Day, Merkley + Partners, Procter & Gamble, and Diageo, working on brands such as Visa, BMW Motorcycles, and California Pizza Kitchen. His background in storytelling, emerging platforms, and growth strategy supports the film’s mission to build an engaged community and convert that momentum into a successful crowdfund."
+      image: chadImg,
+      bio: (
+        <span>
+          Chad Seymour brings more than two decades of brand, media, and audience-building experience to &ldquo;So, <span className="italic tracking-wide">I&rsquo;m</span> the Crazy One?&rdquo;, helping shape the film&rsquo;s positioning, partnerships, and crowdfund strategy. A seasoned marketing executive and agency founder, Chad has led integrated campaigns for global brands and high-growth ventures across entertainment, consumer goods, and digital media. He previously served as Chief Marketing Officer of Zealot Networks and co-founded Wide Open Spaces, advising companies and creators on how to define and own differentiated market space. Earlier in his career, he held leadership roles at Neighbor Agency, TBWA\\Chiat Day, Merkley + Partners, Procter & Gamble, and Diageo, working on brands such as Visa, BMW Motorcycles, and California Pizza Kitchen. His background in storytelling, emerging platforms, and growth strategy supports the film&rsquo;s mission to build an engaged community and convert that momentum into a successful crowdfund.
+        </span>
+      )
     },
     {
       name: "Kim LaFleur",
       title: "Head of Equity Crowdfunding",
-      image: "/Kim.jpeg",
-      bio: "Kim LaFleur leads equity crowdfunding for So I’m the Crazy One, bringing more than 20 years of experience across fintech, digital platforms, and capital formation. She previously co-founded and served as CTO of a FINRA-registered Regulation Crowdfunding platform, where she built the underlying technology, compliance infrastructure, and investor experience that enabled companies to raise capital from everyday investors under the JOBS Act. Throughout her career, she has focused on translating complex regulatory and technical frameworks into scalable, user-friendly systems that drive participation and trust. On the film, she oversees the structure, execution, and optimization of the equity crowdfunding campaign, aligning platform mechanics, investor communications, and growth strategy to maximize participation and long-term community ownership."
+      image: kimImg,
+      bio: (
+        <span>
+          Kim LaFleur leads equity crowdfunding for &ldquo;So, <span className="italic tracking-wide">I&rsquo;m</span> the Crazy One?&rdquo;, bringing more than 20 years of experience across fintech, digital platforms, and capital formation. He previously co-founded and served as CTO of a FINRA-registered Regulation Crowdfunding platform, where she built the underlying technology, compliance infrastructure, and investor experience that enabled companies to raise capital from everyday investors under the JOBS Act. Throughout her career, she has focused on translating complex regulatory and technical frameworks into scalable, user-friendly systems that drive participation and trust. On the film, she oversees the structure, execution, and optimization of the equity crowdfunding campaign, aligning platform mechanics, investor communications, and growth strategy to maximize participation and long-term community ownership.
+        </span>
+      )
+    },
+    {
+      name: "Kara Schab",
+      title: "Brand and Partnership Strategist",
+      image: karaImg,
+      bio: (
+        <span>
+          Kara Schab is a brand strategist and marketing executive with over 12 years of experience helping brands scale through strategic marketing, content, and partnership initiatives. Throughout her career, she has developed and led more than 200 influencer and creator programs, building campaigns that drive awareness, community, and measurable business growth. Her expertise spans brand positioning, go-to-market strategy, creative direction, and partnership development, bringing a unique blend of strategic vision and execution to every project. At Hill Road Pictures, she applies this experience to help build audience engagement, strategic partnerships, and innovative marketing initiatives for &ldquo;So, <span className="italic tracking-wide">I&rsquo;m</span> the Crazy One?&rdquo;
+        </span>
+      )
+    },
+    {
+      name: "Cooper Simmons",
+      title: "AI Enablement Lead",
+      image: cooperImg,
+      bio: (
+        <span>
+          Cooper Simmons builds and runs the AI systems behind Hill Road. This includes a roster of AI characters building real audiences before production, a fully agentic CRM that tracks investor interest from the first click through conversation, provides on-demand analytics, and helps manage the team&rsquo;s casting outreach and signings. He spent a decade in enterprise sales and business development before moving into agentic engineering, and now runs his own AI consulting practice in Fairfield County, Connecticut.
+        </span>
+      )
     }
   ];
 
@@ -861,11 +1010,11 @@ const TheTeam = () => {
       <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24">
         <h2 className="text-5xl md:text-7xl font-display text-brand-blue mb-12 text-center">THE TEAM</h2>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8">
           {team.map((member, i) => (
             <div key={i} className="flex flex-col items-center text-center group cursor-pointer" onClick={() => setSelectedMember(i)}>
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-lg overflow-hidden mb-6 border-4 border-white shadow-xl group-hover:border-brand-gold transition-colors duration-500 relative">
-                 <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                 <img src={member.image} alt={member.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                  <div className="absolute inset-0 bg-brand-gold/0 group-hover:bg-brand-gold/20 transition-colors flex items-center justify-center">
                    <Maximize2 className="text-white opacity-0 group-hover:opacity-100 transition-opacity w-8 h-8" />
                  </div>
@@ -904,6 +1053,7 @@ const TheTeam = () => {
                       src={team[selectedMember].image} 
                       alt={team[selectedMember].name} 
                       className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
                     />
                   </div>
                   <div className="md:w-2/3 p-8 md:p-10">
@@ -943,8 +1093,8 @@ const FAQ = () => {
       answer: "For this offering, the minimum investment starts at $5,000 (Opening Scene tier). This secures your early position in our capital structure."
     },
     {
-      question: "How does the Georgia tax credit work?",
-      answer: "Georgia offers a 30% transferable tax credit for film production. Our CASH instrument provides investors a first lien on these expected credits (estimated at $1.5M), providing significant downside protection compared to traditional film investments. The benefit of the Georgia tax credit is subject to availability on a first-come, first-served basis."
+      question: "How do the state and local tax credits work?",
+      answer: "Production incentives include up to 40% in total state and local tax credit coverage (30% Georgia State + 10% Savannah Film Commission coverage). Our CASH instrument is structured to leverage these expected incentives to enhance capital efficiency compared to traditional film investments, subject to availability on a first-come, first-served basis."
     },
     {
       question: "When do we expect to shoot?",
@@ -952,21 +1102,21 @@ const FAQ = () => {
     },
     {
       question: "What makes the casting strategy unique?",
-      answer: "We have 'inverted the pyramid' by casting 30+ content creators with a combined reach of 110M+ followers first. This strategy builds the audience and distribution demand before we even cast the lead roles, ensuring a built-in market before we roll camera."
+      answer: "We have 'inverted the pyramid' by casting 30+ content creators with a combined reach of 200M+ followers first. This strategy builds the audience and distribution demand before we even cast the lead roles, ensuring a built-in market before we roll camera."
     },
     {
       question: "How does the 33/33/33 ownership model work?",
-      answer: "We have democratized ownership to align all partners: 1/3 of the film is owned by the investors, 1/3 by the producers/filmmakers, and 1/3 by the cast. This ensures that the people promoting the movie have a real stake in its financial success."
+      answer: "We have democratized ownership to align all partners: 1/3 of the film is owned by the investors, 1/3 by the producers/filmmakers, and 1/3 by cast. This ensures that the people promoting the movie have a real stake in its financial success."
     },
     {
       question: "What are the primary risks of film investing?",
-      answer: "Like any early-stage venture, risks include execution (completing production) and monetization (audience reception). We mitigate these through a lean budget mirroring high-ROI genre comps, built-in creator audiences, and tax credit protection."
+      answer: "Like any early-stage venture, risks include execution (completing production) and monetization (audience reception). We mitigate these through a lean budget mirroring high-ROI genre comps, built-in creator audiences, and state and local tax credit incentives."
     },
     {
       question: "How will the crowdfunded Community Round happen and how can I help?",
       answer: (
         <>
-          Following this private Accredited round, we will launch a $5M Regulation Crowdfunding (RegCF) 'Community Round' in May. This allows non-accredited fans and the general public to own a piece of the film. You can help by <a href="/invest" onClick={(e) => { e.preventDefault(); navigate('/invest'); }} className="text-brand-red font-bold hover:underline">joining our mailing list</a> and sharing the project with your community.
+          Following this private Accredited round, we will launch a $5M Regulation Crowdfunding (RegCF) 'Community Round' in June. This allows non-accredited fans and the general public to own a piece of the film. You can help by <a href="/invest" data-meta-event="ClickInvest" data-meta-location="inline-regcf" onClick={(e) => { e.preventDefault(); navigate('/invest'); }} className="text-brand-red font-bold hover:underline">joining our mailing list</a> and sharing the project with your community.
         </>
       )
     }
@@ -1030,7 +1180,7 @@ const Footer = () => (
             <a href="/" className="block">
               <img 
                 src="/SITCO Primary Wordmark single line white transparent v2.png" 
-                alt="SITCO" 
+                alt="So, I'm the Crazy One?" 
                 className="h-10 w-auto hover:opacity-80 transition-opacity"
                 referrerPolicy="no-referrer"
               />
@@ -1045,6 +1195,18 @@ const Footer = () => (
             <a href="mailto:finance@hillroadpictures.com" className="flex items-center gap-3 text-gray-400 hover:text-brand-gold transition-colors text-sm">
               <Mail className="w-4 h-4" /> finance@hillroadpictures.com
             </a>
+            <div>
+              <a
+                href="/privacy"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/privacy');
+                }}
+                className="inline-block text-xs text-gray-400 hover:text-brand-gold transition-colors underline underline-offset-4"
+              >
+                Privacy Policy
+              </a>
+            </div>
           </div>
         </div>
 
@@ -1056,8 +1218,22 @@ const Footer = () => (
         </div>
       </div>
       
-      <div className="border-t border-white/10 pt-8 text-center text-[10px] text-gray-500 uppercase tracking-[0.2em]">
-        &copy; 2026 Hill Road Pictures. All Rights Reserved. Private Placement.
+      <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-[10px] text-gray-500 uppercase tracking-[0.2em]">
+        <div>
+          &copy; 2026 Hill Road Pictures. All Rights Reserved. Private Placement.
+        </div>
+        <div className="flex items-center gap-4">
+          <a
+            href="/privacy"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/privacy');
+            }}
+            className="text-gray-400 hover:text-brand-gold transition-colors underline underline-offset-4"
+          >
+            Privacy Policy
+          </a>
+        </div>
       </div>
     </div>
   </footer>
@@ -1101,7 +1277,7 @@ const StickyFooter = () => {
                 <div className="flex flex-col items-end gap-0.5 sm:flex-row sm:items-baseline sm:gap-4">
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Total</span>
-                    <span className="text-lg sm:text-2xl font-display text-brand-gold leading-none"> $810,000</span>
+                    <span className="text-lg sm:text-2xl font-display text-brand-gold leading-none"> $986,000</span>
                   </div>
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Goal</span>
@@ -1110,20 +1286,25 @@ const StickyFooter = () => {
                 </div>
               </div>
               <div className="progress-bar-bg flex w-full relative">
-                <div className="progress-bar-fill" style={{ width: '39.25%' }}>
+                <div className="progress-bar-fill" style={{ width: '37.5%' }}>
                   <div className="absolute inset-0 bg-white/10 animate-pulse"></div>
                 </div>
-                <div className="progress-bar-committed" style={{ width: '1.25%' }}></div>
+                <div className="progress-bar-committed" style={{ width: '11.8%' }}></div>
               </div>
             </div>
             
             <div className="flex items-center gap-4 w-full sm:w-auto shrink-0">
               <a 
-                href="/invest"
-                onClick={(e) => { e.preventDefault(); navigate('/invest'); }}
+                href="/invest" 
+                data-meta-event="ClickInvest"
+                data-meta-location="footer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/invest');
+                }}
                 className="w-full sm:w-auto bg-brand-red text-white px-10 py-4 text-xl font-display uppercase tracking-wider hover:bg-red-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl group"
               >
-                Invest Now
+                Learn More
                 <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
@@ -1165,5 +1346,3 @@ export default function App() {
     </div>
   );
 }
-
-

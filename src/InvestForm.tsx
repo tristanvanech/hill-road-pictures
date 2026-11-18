@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, X, Loader2, Sunrise, Sun, Sunset, FileText, Play, Phone } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, X, Loader2, FileText, Play, Phone } from 'lucide-react';
 import { navigate, getUtmParams, type UtmParams } from './router';
 import { trackMeta } from './meta';
+
+export const ZOOM_WEBINAR_URL =
+  'https://us06web.zoom.us/webinar/register/WN_Q5NzBRFuQE-tHE-yFaV_5Q';
 
 // --- Types ---
 
 type InvestmentLevel = '5000' | '10000' | '30000' | '100000' | 'other';
-type Accredited = 'yes' | 'no' | 'unsure';
+type Accredited = 'yes' | 'no';
 type CallbackTime = 'morning' | 'afternoon' | 'evening';
 type TimeZone = 'ET' | 'CT' | 'MT' | 'PT';
 type InterestType = 'documents' | 'webinar' | 'call';
@@ -18,6 +21,7 @@ interface LeadData {
   email: string;
   phone: string;
   phoneCountry: string;
+  smsConsent: boolean;
   investmentLevel: InvestmentLevel | '';
   investmentOther: string;
   accredited: Accredited | '';
@@ -26,7 +30,7 @@ interface LeadData {
   timeZone: string;
   consent: boolean;
   interest: InterestType | '';
-  webinarSession: string;
+  webinarSession?: string;
 }
 
 /** The full payload sent on submit: form fields plus hidden UTM attribution and path-specific fields. */
@@ -37,6 +41,7 @@ interface SubmitLeadPayload {
   investment_level: string;
   accredited: string;
   consent: boolean;
+  sms_consent?: boolean;
   utm_source: string;
   utm_medium: string;
   utm_campaign: string;
@@ -56,6 +61,7 @@ const EMPTY_LEAD: LeadData = {
   email: '',
   phone: '',
   phoneCountry: 'US',
+  smsConsent: false,
   investmentLevel: '',
   investmentOther: '',
   accredited: '',
@@ -78,7 +84,6 @@ const INVESTMENT_OPTIONS: { value: InvestmentLevel; label: string }[] = [
 const ACCREDITED_OPTIONS: { value: Accredited; label: string; hint: string }[] = [
   { value: 'yes', label: 'Yes', hint: 'I meet the SEC accredited investor criteria.' },
   { value: 'no', label: 'No', hint: 'I do not currently meet those criteria.' },
-  { value: 'unsure', label: "I'm not sure", hint: "I'd like help understanding this." },
 ];
 
 const CALL_TIME_BLOCKS = [
@@ -133,11 +138,6 @@ const TIMEZONE_GLOBAL_OPTIONS = [
   { value: 'ART', label: 'Argentina Time (ART, UTC-3)' },
   { value: 'SAST', label: 'South Africa Standard Time (SAST, UTC+2)' },
   { value: 'EAT', label: 'East Africa Time (EAT, UTC+3)' },
-];
-
-const WEBINAR_OPTIONS = [
-  'Thursday, June 18 — 7:15 PM ET',
-  'Tuesday, June 23 — 4:15 PM ET',
 ];
 
 interface Country {
@@ -243,8 +243,14 @@ function formatUSPhone(value: string): string {
 }
 
 function formatPhone(country: string, value: string): string {
-  if (isNANP(country)) return formatUSPhone(value);
-  return value.replace(/\D/g, '').slice(0, 15);
+  let digits = value.replace(/\D/g, '');
+  if (isNANP(country)) {
+    if (digits.length === 11 && digits.startsWith('1')) {
+      digits = digits.slice(1);
+    }
+    return formatUSPhone(digits);
+  }
+  return digits.slice(0, 15);
 }
 
 function validateStepCode(stepCode: string, d: LeadData): FieldErrors {
@@ -256,19 +262,19 @@ function validateStepCode(stepCode: string, d: LeadData): FieldErrors {
     if (!d.email.trim()) e.email = 'Please enter your email address.';
     else if (!EMAIL_RE.test(d.email.trim())) e.email = 'Please enter a valid email address.';
     
-    if (d.interest === 'call') {
-      if (!d.phone.trim()) {
-        e.phone = 'Please enter your phone number.';
-      } else {
-        const digits = d.phone.replace(/\D/g, '');
-        const minDigits = isNANP(d.phoneCountry) ? 10 : 6;
-        if (digits.length < minDigits) e.phone = 'Please enter a valid phone number.';
-      }
-    } else {
-      if (d.phone.trim()) {
-        const digits = d.phone.replace(/\D/g, '');
-        const minDigits = isNANP(d.phoneCountry) ? 10 : 6;
-        if (digits.length < minDigits) e.phone = 'Please enter a valid phone number.';
+    // Phone field is optional. If SMS consent is checked without a phone number, prompt for phone number.
+    if (d.smsConsent && !d.phone.trim()) {
+      e.phone = 'Please enter a phone number to receive SMS updates, or uncheck SMS consent.';
+    } else if (d.phone.trim()) {
+      const digits = d.phone.replace(/\D/g, '');
+      const minDigits = isNANP(d.phoneCountry) ? 10 : 6;
+      if (digits.length < minDigits) {
+        e.phone = 'Please enter a valid phone number.';
+      } else if (isNANP(d.phoneCountry)) {
+        const firstDigit = digits[0];
+        if (firstDigit === '0' || firstDigit === '1') {
+          e.phone = 'Phone number area code cannot start with 0 or 1.';
+        }
       }
     }
   } else if (stepCode === 'amount') {
@@ -280,8 +286,6 @@ function validateStepCode(stepCode: string, d: LeadData): FieldErrors {
     }
   } else if (stepCode === 'accredited') {
     if (!d.accredited) e.accredited = 'Please select one option.';
-  } else if (stepCode === 'session') {
-    if (!d.webinarSession) e.webinarSession = 'Please select a webinar session.';
   } else if (stepCode === 'schedule') {
     if (!d.callbackDate) {
       e.callbackDate = 'Please choose a date for your call.';
@@ -321,7 +325,7 @@ function FieldError({ message }: { message?: string }) {
 }
 
 const inputBase =
-  'w-full rounded-xl border-2 bg-white px-4 py-3.5 text-base text-brand-blue placeholder-brand-blue/35 transition focus:outline-none focus:ring-2';
+  'block w-full min-w-0 rounded-xl border-2 bg-white px-3 py-3 sm:px-4 sm:py-3.5 text-base text-brand-blue placeholder-brand-blue/35 transition focus:outline-none focus:ring-2';
 
 function inputClasses(hasError?: boolean): string {
   return `${inputBase} ${
@@ -377,31 +381,46 @@ function ConsentCheckbox({
   onChange: (checked: boolean) => void;
   interest?: InterestType | '';
 }) {
-  let labelText = "I agree to receive communication from Hill Road Pictures LLC regarding this project.";
+  let labelText = "I agree to receive communication and offering updates from Hill Road Pictures LLC.";
   if (interest === 'webinar') {
-    labelText = "I agree to receive a meeting link to the webinar and to receive future communication from Hill Road Pictures LLC.";
+    labelText = "I agree to receive webinar access links and investor updates from Hill Road Pictures LLC.";
   } else if (interest === 'documents') {
-    labelText = "I agree to receive the investment documents and to receive future communication from Hill Road Pictures LLC.";
+    labelText = "I agree to receive the investment documents and offering updates from Hill Road Pictures LLC.";
   } else if (interest === 'call') {
-    labelText = "I agree to receive call-back scheduling confirmations and to receive future communication from Hill Road Pictures LLC.";
+    labelText = "I agree to receive call-back scheduling confirmations and updates from Hill Road Pictures LLC.";
   }
 
   return (
-    <label
-      htmlFor="consent"
-      className="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border-2 border-brand-blue/15 bg-white px-4 py-3.5 select-none transition hover:border-brand-blue/30"
-    >
-      <input
-        id="consent"
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 h-5 w-5 shrink-0 accent-brand-red cursor-pointer"
-      />
-      <span className="text-sm leading-relaxed text-brand-blue/80">
-        {labelText}
-      </span>
-    </label>
+    <div className="mt-6 space-y-2">
+      <label
+        htmlFor="consent"
+        className="flex cursor-pointer items-start gap-3 rounded-xl border-2 border-brand-blue/15 bg-white px-4 py-3.5 select-none transition hover:border-brand-blue/30"
+      >
+        <input
+          id="consent"
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+          className="mt-0.5 h-5 w-5 shrink-0 accent-brand-red cursor-pointer"
+        />
+        <span className="text-xs sm:text-sm leading-relaxed text-brand-blue/90">
+          {labelText}{' '}
+          <span className="text-brand-blue/60">
+            (See our{' '}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-red font-semibold underline hover:text-red-700"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Privacy Policy
+            </a>
+            )
+          </span>
+        </span>
+      </label>
+    </div>
   );
 }
 
@@ -428,25 +447,27 @@ function ChooserStep({ onSelect }: { onSelect: (interest: InterestType) => void 
       <div className="grid grid-cols-1 gap-4">
         {[
           {
-            id: 'documents' as const,
-            title: 'Send me the documents',
-            desc: 'Request the investment offering documents directly to your inbox.',
-            icon: FileText,
-            metaEvent: 'ChooseDocuments' as const,
-          },
-          {
             id: 'webinar' as const,
-            title: 'Join a webinar',
-            desc: 'Attend a live webinar session and discover how the film gets made and how the investment works.',
+            title: 'Attend an investor webinar',
+            desc: 'Join a presentation to learn how the film gets made and how the investment works.',
             icon: Play,
             metaEvent: 'ChooseWebinar' as const,
           },
           {
-            id: 'call' as const,
-            title: 'Schedule a call',
-            desc: 'Talk one-on-one with Frank and Bob to discuss investment details.',
-            icon: Phone,
-            metaEvent: 'ChooseCall' as const,
+            id: 'documents' as const,
+            title: 'Send me the documents',
+            desc: (
+              <>
+                <strong className="font-bold text-brand-blue block mb-1">
+                  For serious accredited investors only.
+                </strong>
+                <span>
+                  If you&apos;re a big-shot, real investor and you&apos;re not just kicking our tires, you&apos;ll get a follow-up from our Investor Relations team.
+                </span>
+              </>
+            ),
+            icon: FileText,
+            metaEvent: 'ChooseDocuments' as const,
           },
         ].map((opt) => {
           const Icon = opt.icon;
@@ -588,7 +609,7 @@ function InfoStep({ data, errors, update, totalSteps, stepIndex }: StepProps) {
 
         <div>
           <label htmlFor="phone" className="mb-1.5 block text-sm font-bold uppercase tracking-wide text-brand-blue">
-            Phone number {data.interest !== 'call' && <span className="text-xs font-normal text-brand-blue/50 lowercase">(optional)</span>}
+            Phone number <span className="text-xs font-normal text-brand-blue/50 lowercase">(optional)</span>
           </label>
           <div className="flex items-stretch gap-2">
             <div className="relative" ref={countryRef}>
@@ -650,12 +671,45 @@ function InfoStep({ data, errors, update, totalSteps, stepIndex }: StepProps) {
               autoComplete="tel"
               placeholder={isNANP(data.phoneCountry) ? '(555) 123-4567' : 'Phone number'}
               value={data.phone}
+              onInput={(e) => update({ phone: formatPhone(data.phoneCountry, e.currentTarget.value) })}
               onChange={(e) => update({ phone: formatPhone(data.phoneCountry, e.target.value) })}
               className={`flex-1 min-w-0 ${inputClasses(!!errors.phone)}`}
               aria-invalid={!!errors.phone}
             />
           </div>
           <FieldError message={errors.phone} />
+
+          {/* SMS Disclosure & Separate Optional Unchecked Checkbox */}
+          <div className="mt-3 rounded-xl border border-brand-blue/15 bg-brand-blue/[0.02] p-3.5 space-y-2.5">
+            <p className="text-[11px] leading-relaxed text-brand-blue/70">
+              By providing your phone number and checking the box below, you agree to receive recurring automated promotional and informational text messages (SMS) from Hill Road Pictures LLC. Message frequency varies. Message and data rates may apply. Consent is not a condition of investment or purchase. Reply STOP to unsubscribe, HELP for help. For more details, review our{' '}
+              <a
+                href="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-brand-red underline hover:text-red-700"
+              >
+                Privacy Policy
+              </a>
+              .
+            </p>
+
+            <label
+              htmlFor="smsConsent"
+              className="flex cursor-pointer items-start gap-2.5 pt-0.5 select-none"
+            >
+              <input
+                id="smsConsent"
+                type="checkbox"
+                checked={data.smsConsent}
+                onChange={(e) => update({ smsConsent: e.target.checked })}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-brand-red rounded border-brand-blue/20 cursor-pointer"
+              />
+              <span className="text-xs text-brand-blue/90 font-medium leading-snug">
+                I agree to receive text messages (SMS) from Hill Road Pictures LLC at the phone number provided above. <span className="text-brand-blue/50 font-normal">(Optional)</span>
+              </span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -712,7 +766,17 @@ function AmountStep({ data, errors, update, totalSteps, stepIndex }: StepProps) 
 function AccreditedStep({ data, errors, update, totalSteps, stepIndex, showConsent }: StepProps) {
   return (
     <div>
-      <StepHeading step={stepIndex} total={totalSteps} title="Are you an accredited investor?" />
+      <div className="mb-6">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-red mb-2">
+          Step {stepIndex} of {totalSteps}
+        </p>
+        <h2 className="font-display uppercase tracking-wide text-brand-blue text-2xl sm:text-3xl leading-tight mb-2">
+          Are you an accredited investor?
+        </h2>
+        <p className="text-xs sm:text-sm text-brand-blue/70 leading-relaxed font-sans normal-case tracking-normal">
+          Under SEC rules, an individual is accredited with an annual income of <strong className="text-brand-blue font-semibold">$200,000+</strong> (or <strong className="text-brand-blue font-semibold">$300,000+</strong> with a spouse or partner) in each of the past two years, OR a net worth exceeding <strong className="text-brand-blue font-semibold">$1,000,000</strong> (excluding primary residence).
+        </p>
+      </div>
       <div className="space-y-3">
         {ACCREDITED_OPTIONS.map((opt) => (
           <div key={opt.value}>
@@ -726,39 +790,6 @@ function AccreditedStep({ data, errors, update, totalSteps, stepIndex, showConse
         ))}
       </div>
       <FieldError message={errors.accredited} />
-
-      {showConsent && (
-        <ConsentCheckbox
-          checked={data.consent}
-          onChange={(val) => update({ consent: val })}
-          interest={data.interest}
-        />
-      )}
-    </div>
-  );
-}
-
-function WebinarStep({ data, errors, update, totalSteps, stepIndex, showConsent }: StepProps) {
-  return (
-    <div>
-      <StepHeading
-        step={stepIndex}
-        total={totalSteps}
-        title="Choose a webinar session"
-        subtitle="Attend a live info session with our team."
-      />
-      <div className="space-y-3">
-        {WEBINAR_OPTIONS.map((opt) => (
-          <div key={opt}>
-            <OptionCard
-              selected={data.webinarSession === opt}
-              onClick={() => update({ webinarSession: opt })}
-              title={opt}
-            />
-          </div>
-        ))}
-      </div>
-      <FieldError message={errors.webinarSession} />
 
       {showConsent && (
         <ConsentCheckbox
@@ -791,7 +822,7 @@ function ScheduleStep({ data, errors, update, totalSteps, stepIndex, showConsent
             min={todayISO()}
             value={data.callbackDate}
             onChange={(e) => update({ callbackDate: e.target.value })}
-            className={inputClasses(!!errors.callbackDate)}
+            className={`${inputClasses(!!errors.callbackDate)} appearance-none block w-full min-w-0 max-w-full box-border px-2.5 sm:px-4`}
             aria-invalid={!!errors.callbackDate}
           />
           <FieldError message={errors.callbackDate} />
@@ -806,7 +837,7 @@ function ScheduleStep({ data, errors, update, totalSteps, stepIndex, showConsent
               id="callbackTime"
               value={data.callbackTime}
               onChange={(e) => update({ callbackTime: e.target.value })}
-              className={`${inputClasses(!!errors.callbackTime)} appearance-none pr-10`}
+              className={`${inputClasses(!!errors.callbackTime)} appearance-none pl-2.5 pr-10 sm:pl-4 sm:pr-10 w-full min-w-0`}
             >
               <option value="">Choose a 30-minute call block</option>
               {CALL_TIME_BLOCKS.map((t) => (
@@ -831,7 +862,7 @@ function ScheduleStep({ data, errors, update, totalSteps, stepIndex, showConsent
               id="timeZone"
               value={data.timeZone}
               onChange={(e) => update({ timeZone: e.target.value })}
-              className={`${inputClasses(!!errors.timeZone)} appearance-none pr-10`}
+              className={`${inputClasses(!!errors.timeZone)} appearance-none pl-2.5 pr-10 sm:pl-4 sm:pr-10 w-full min-w-0`}
             >
               <option value="">Select your time zone</option>
               {TIMEZONE_GLOBAL_OPTIONS.map((opt) => (
@@ -886,6 +917,7 @@ export function InvestForm() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const stepRef = useRef<HTMLDivElement>(null);
 
@@ -921,9 +953,7 @@ export function InvestForm() {
         list.push('amount');
       }
       list.push('accredited');
-      if (data.interest === 'webinar') {
-        list.push('session');
-      } else if (data.interest === 'call') {
+      if (data.interest === 'call') {
         list.push('schedule');
       }
     }
@@ -969,6 +999,7 @@ export function InvestForm() {
         investment_level: data.investmentLevel === 'other' ? data.investmentOther : data.investmentLevel,
         accredited: data.accredited,
         consent: data.consent,
+        sms_consent: data.smsConsent,
         utm_source: utms.utm_source || '',
         utm_medium: utms.utm_medium || '',
         utm_campaign: utms.utm_campaign || '',
@@ -977,7 +1008,7 @@ export function InvestForm() {
       };
 
       if (data.interest === 'webinar') {
-        payload.webinar_session = data.webinarSession;
+        payload.webinar_session = data.webinarSession || 'Live Investor Webinar on Zoom';
       } else if (data.interest === 'call') {
         payload.preferred_date = data.callbackDate;
         payload.preferred_time = data.callbackTime;
@@ -1032,7 +1063,11 @@ export function InvestForm() {
     if (step < steps.length) {
       goTo(step + 1);
     } else {
-      handleSubmit();
+      if (data.interest === 'documents') {
+        setShowConfirmDialog(true);
+      } else {
+        handleSubmit();
+      }
     }
   }
 
@@ -1114,7 +1149,7 @@ export function InvestForm() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.26, ease: 'easeInOut' }}
-                className="rounded-2xl border border-brand-gold/20 bg-paper p-6 shadow-2xl outline-none sm:p-9"
+                className="rounded-2xl border border-brand-gold/20 bg-paper p-4 shadow-2xl outline-none sm:p-9"
               >
                 {step === 0 && <ChooserStep onSelect={handleSelectInterest} />}
                 {step > 0 && activeStepCode === 'info' && (
@@ -1125,9 +1160,6 @@ export function InvestForm() {
                 )}
                 {step > 0 && activeStepCode === 'accredited' && (
                   <AccreditedStep data={data} errors={errors} update={update} totalSteps={TOTAL_STEPS} stepIndex={step} showConsent={step === TOTAL_STEPS} />
-                )}
-                {step > 0 && activeStepCode === 'session' && (
-                  <WebinarStep data={data} errors={errors} update={update} totalSteps={TOTAL_STEPS} stepIndex={step} showConsent={step === TOTAL_STEPS} />
                 )}
                 {step > 0 && activeStepCode === 'schedule' && (
                   <ScheduleStep data={data} errors={errors} update={update} totalSteps={TOTAL_STEPS} stepIndex={step} showConsent={step === TOTAL_STEPS} />
@@ -1170,7 +1202,7 @@ export function InvestForm() {
                         </>
                       ) : step === TOTAL_STEPS ? (
                         <>
-                          Submit Details
+                          Submit
                           <Check className="h-4 w-4" strokeWidth={3} />
                         </>
                       ) : (
@@ -1192,8 +1224,78 @@ export function InvestForm() {
       <footer className="shrink-0 bg-brand-blue border-t border-white/5 py-6">
         <div className="mx-auto w-full max-w-xl px-5 text-center">
           <p className="text-[10px] leading-relaxed text-white/40 font-sans">{DISCLAIMER}</p>
+          <div className="mt-3 flex items-center justify-center gap-4 text-xs text-white/50">
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-gold hover:underline font-semibold"
+            >
+              Privacy Policy
+            </a>
+            <span className="text-white/20">&bull;</span>
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/');
+              }}
+              className="hover:text-white transition-colors"
+            >
+              Film Overview
+            </a>
+          </div>
         </div>
       </footer>
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full max-w-md bg-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-brand-gold/30 text-center animate-in fade-in zoom-in-95 duration-200"
+          >
+            <div className="w-12 h-12 rounded-full bg-brand-red/10 text-brand-red flex items-center justify-center mx-auto mb-4">
+              <FileText className="w-6 h-6" />
+            </div>
+            <h3 className="font-display uppercase tracking-wide text-brand-blue text-xl sm:text-2xl mb-3 leading-snug">
+              Final Confirmation
+            </h3>
+            <p className="text-base sm:text-lg text-brand-blue/85 font-medium mb-6 leading-relaxed">
+              Just one final confirmation that you&apos;re actively looking to invest?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={() => setShowConfirmDialog(false)}
+                disabled={submitting}
+                className="w-full sm:w-1/2 py-3.5 px-4 rounded-xl border-2 border-brand-blue/20 text-brand-blue font-bold uppercase tracking-wider text-xs sm:text-sm hover:bg-brand-blue/5 transition active:scale-[0.98] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowConfirmDialog(false);
+                  handleSubmit();
+                }}
+                disabled={submitting}
+                className="w-full sm:w-1/2 py-3.5 px-4 rounded-xl bg-brand-red text-white font-bold uppercase tracking-wider text-xs sm:text-sm hover:bg-red-700 transition shadow-md active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  'Yes, Confirm'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

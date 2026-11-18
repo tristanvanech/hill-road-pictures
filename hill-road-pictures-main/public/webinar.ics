@@ -1,0 +1,11 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Hill Road Pictures//Webinar//EN
+BEGIN:VEVENT
+SUMMARY:Investor Webinar: "So, I'm the Crazy One?"
+DESCRIPTION:Join our live investor webinar here: https://us06web.zoom.us/j/89767880508?pwd=XQL4SMagwnWaFCfgfHm9jLtkCIOJcz.1
+LOCATION:https://us06web.zoom.us/j/89767880508?pwd=XQL4SMagwnWaFCfgfHm9jLtkCIOJcz.1
+DTSTART:20260825T230000Z
+DTEND:20260826T000000Z
+END:VEVENT
+END:VCALENDAR
